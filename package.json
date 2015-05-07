@@ -1,0 +1,22 @@
+{
+  "name": "teachable",
+  "version": "0.0.0",
+  "private": false,
+  "dependencies": {
+    "express": "^3.4.8",
+    "express3-handlebars": "^0.4.1",
+    "passport": "^0.2.1",
+    "livereload-js": "^2.2.2"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-livereload": "^3.8.0",
+    "gulp-sass": "^2.0.0",
+    "node-bourbon": "^4.2.2",
+    "gulp-sourcemaps": "^1.5.2"
+  },
+  "engines": {
+    "node": ">=0.8.0",
+    "npm": "1.2.x"
+  }
+}
