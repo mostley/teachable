@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+    <title>Node Authentication</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+
+    <%-defineContent('style') %>
+</head>
+<body>
+
+<div class="jumbotron text-center">
+    <h1><%- defineContent('title') %></h1>
+
+    <%- include ../partials/menu %>
+</div>
+
+<div class="container">
+    <%- body %>
+
+    <%-defineContent('script') %>
+
+</div>
+</body>
+</html>
+

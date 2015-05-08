@@ -1,16 +1,3 @@
-<!doctype html>
-<html>
-<head>
-    <title>Node Authentication</title>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
-    <style>
-        body         { padding-top:80px; }
-    </style>
-</head>
-<body>
-<div class="container">
-
     <div class="jumbotron text-center">
         <h1><span class="fa fa-lock"></span> Node Authentication</h1>
 
@@ -23,11 +10,9 @@
         <a href="/auth/google" class="btn btn-danger"><span class="fa fa-google-plus"></span> Google+</a>
     </div>
 
-    <div class="text-center">
-        <p>A demo by <a href="http://scotch.io">Scotch</a>.</p>
-        <p>Visit the <a href="http://scotch.io/tutorials/javascript/easy-node-authentication-setup-and-local">tutorial</a>.</p>
-    </div>
+<%- contentFor('style') %>
 
-</div>
-</body>
-</html>
+<style>
+</style>
+
+<%- contentFor('script') %>

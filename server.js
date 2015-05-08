@@ -1,6 +1,7 @@
 
 // set up ======================================================================
 var express      = require('express');
+var expressLayouts   = require('express-ejs-layouts');
 var app          = express();
 var port         = process.env.PORT || 3333;
 var mongoose     = require('mongoose');
@@ -26,8 +27,10 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname + '/public'));
+app.use(expressLayouts);
 
 app.set('view engine', 'ejs');
+app.set('layout', 'layouts/main');
 
 app.use(session({ 
     secret: 'ilovescotchscotchyscotchscotch',
