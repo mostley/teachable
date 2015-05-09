@@ -1,0 +1,140 @@
+<%
+    var userDict = {};
+    for (var i=0; i<users.length; i++) {
+        userDict[users[i]._id] = users[i];
+    }
+%>
+
+
+<%- contentFor('title') %>
+
+<h1><span class="fa fa-users"></span> Users</h1>
+
+<%- contentFor('body') %>
+
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+        <div class="panel-title pull-left" style="padding-top: 0.4em;">
+            Users
+        </div>
+        <div class="btn-group pull-right">
+            <button type="button" class="btn btn-primary btn-sm navbar-right" data-toggle="modal" data-target="#create_user_modal" title="Create a new User">
+                <span class="fa fa-plus"> Add User</span>
+            </button>
+        </div>
+    </div>
+
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Courses</th>
+                <th>Function</th>
+            </tr>
+        </thead>
+
+<% for (var i=0; i<users.length; i++) { %>
+        <tr>
+            <td><%- i + 1 %></td>
+            <td><%- users[i].local.name %></td>
+            <td><%- users[i].local.email%></td>
+            <td><span class="badge">0</span><%- users[i].courses%></td>
+            <td>
+                <div class="btn-group" role="toolbar" aria-label="user controls">
+                    <div class="btn-group" role="group">
+                        <button role="button" class="btn btn-default btn-edit-user" data-user-id="<%-users[i]._id%>" title="Edit User"><span class="fa fa-pencil"></span></a>
+                        <button type="submit" role="button" class="btn btn-default btn-delete-user" data-user-id="<%-users[i]._id%>" title="Delete User"><span class="fa fa-trash-o"></span></a>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button role="button" class="btn btn-default btn-mail-course" data-course-id="<%-users[i]._id%>" title="Send Mail to User"><span class="fa fa-envelope-o"></span></a>
+                    </div>
+                </div>
+            </td>
+        </tr>
+<% } %>
+    </table>
+</div>
+
+<div class="modal fade" id="create_user_modal" tabindex="-1" role="dialog" aria-labelledby="create_user_modal_label" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="form-horizontal" action="/users" method="POST">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="create_users_modal_label">Create User</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="inputName" class="col-sm-2 control-label">Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inputName" placeholder="Name" name="name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputEmail" class="col-sm-2 control-label">Email</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" id="inputEmail" placeholder="Email" name="email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputNotify" class="col-sm-2 control-label"></label>
+                        <div class="col-sm-10">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id=inputNotify" name="notify"> Notify User?
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </form>
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<%- contentFor('style') %>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="bower_components/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css">
+
+<%- contentFor('script') %>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="bower_components/bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js"></script>
+
+
+
+<script type="text/javascript">
+    $('.user-input').tokenfield({
+        autocomplete: {
+            source: [
+<% for (var i=0; i<users.length; i++) { %>
+    { value: '<%- users[i].id %>', label: '<%- users[i].local.name %>' },
+<% } %>
+            ],
+            delay: 100,
+            open: function() {
+                $(this).autocomplete('widget').css('z-index', 9055);
+                return false;
+            }
+        }
+    });
+
+    $('.btn-delete-user').click(function() {
+        $.ajax('/users/' + $(this).data('user-id'), {
+            method: 'delete',
+            success: function() {
+                window.location = "/users"; 
+            },
+            error: function() {
+                alert("failed to delete user");
+            }
+        });
+    });
+</script>
+
