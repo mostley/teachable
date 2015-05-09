@@ -42,7 +42,7 @@
         <tr>
             <td><%- i + 1 %></td>
             <td><%- courses[i].name %></td>
-            <td><%- courses[i].teachers.map(function(p){ return userDict[p].local.name; }) %></td>
+            <td><%- courses[i].teachers.map(function(p){ return userDict[p].local.name; }).join(', ') %></td>
             <td><%- courses[i].dates %></td>
             <td><%- courses[i].participants.map(function(p){ return userDict[p].name; }) %></td>
             <td>
@@ -65,42 +65,15 @@
     </table>
 </div>
 
-<div class="modal fade" id="create_course_modal" tabindex="-1" role="dialog" aria-labelledby="create_course_modal_label" aria-hidden="true">
-    <div class="modal-dialog">
-        <form class="form-horizontal" action="/courses" method="POST">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="create_course_modal_label">Create Course</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="inputName" class="col-sm-2 control-label">Name</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputName" placeholder="Name" name="name">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="inputDate" class="col-sm-2 control-label">Start</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputDate" placeholder="Start Date" name="date">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="inputTeacher" class="col-sm-2 control-label">Teachers</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control user-input" id="inputTeacher" placeholder="Enter Teachers" name="teachers">
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Create</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </form>
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+<% modal_course_dialog_title = 'Create Course' %>
+<% modal_course_dialog_id = 'create_course_modal' %>
+<% modal_course_dialog_submit_label = 'Create' %>
+<% include partials/modal_course_dialog %>
+
+<% modal_course_dialog_title = 'Edit Course' %>
+<% modal_course_dialog_id = 'edit_course_modal' %>
+<% modal_course_dialog_submit_label = 'Save Changes' %>
+<% include partials/modal_course_dialog %>
 
 <% mail_modal_title = 'Send Mail to Course Participants' %>
 <% mail_modal_id = 'mail_modal' %>
@@ -144,6 +117,40 @@
             error: function() {
                 alert("failed to delete course");
             }
+        });
+    });
+
+    $('.btn-edit-course').click(function() {
+        var row = $(this).parents('tr').children();
+        var id = $(this).data('user-id');
+        var name = row[1].innerHTML;
+        var teachers = row[2].innerHTML.split(', ');
+        var date = row[3].innerHTML;
+        var participants = $(row[3]).data('participants');
+        $('#edit_course_modal_name').val(name);
+        $('#edit_course_modal_teachers').val(teachers);
+        $('#edit_course_modal_date').val(date);
+        $('#edit_course_modal_participants').val(participants);
+
+        $('#edit_course_modal').modal();
+
+        $('#edit_course_modal_submit').click(function(e) {
+            e.preventDefault();
+            $.ajax('/users/' + id, {
+                method: 'put',
+                data: {
+                    name:  $('#edit_course_modal_name').val(),
+                    email: $('#edit_course_modal_email').val(),
+                    admin:  $('#edit_course_modal_admin').bootstrapSwitch('state')
+                },
+                success: function() {
+                    window.location = "/courses";
+                },
+                error: function() {
+                    alert("failed to update course");
+                }
+            });
+
         });
     });
     
