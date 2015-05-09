@@ -1,0 +1,4 @@
+PassengerEnabled on
+PassengerAppRoot /webapps/teachable
+PassengerStartupFile server.js
+PassengerAppType node
