@@ -1,0 +1,49 @@
+
+<div class="modal fade" id="<%- modal_user_dialog_id %>" tabindex="-1" role="dialog" aria-labelledby="create_user_modal_label" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="form-horizontal" action="/users" method="POST">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="create_users_modal_label"><%- modal_user_dialog_title %></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="<%-modal_user_dialog_id%>_name" class="col-sm-2 control-label">Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="<%-modal_user_dialog_id%>_name" placeholder="Name" name="name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="<%-modal_user_dialog_id%>_email" class="col-sm-2 control-label">Email</label>
+                        <div class="col-sm-10">
+                            <input type="email" class="form-control" id="<%-modal_user_dialog_id%>_email" placeholder="Email" name="email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="<%-modal_user_dialog_id%>_admin" class="col-sm-2 control-label">Is Admin</label>
+                        <div class="col-sm-10">
+                            <input type="checkbox" class="input-switch" id="<%-modal_user_dialog_id%>_admin" placeholder="Is Admin" name="admin">
+                        </div>
+                    </div>
+<% if (modal_user_dialog_show_notify) { %>
+                    <div class="form-group">
+                        <label for="inputNotify" class="col-sm-2 control-label"></label>
+                        <div class="col-sm-10">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="<%-modal_user_dialog_id%>_notify" name="notify"> Notify User?
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+<% } %>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="<%-modal_user_dialog_id%>_submit" type="submit" class="btn btn-primary"><%- modal_user_dialog_submit_label %></button>
+                </div>
+            </div><!-- /.modal-content -->
+        </form>
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

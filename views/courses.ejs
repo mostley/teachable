@@ -17,11 +17,13 @@
         <div class="panel-title pull-left" style="padding-top: 0.4em;">
             Courses
         </div>
-        <div class="btn-group pull-right">
-            <button type="button" class="btn btn-primary btn-sm navbar-right" data-toggle="modal" data-target="#create_course_modal" title="Create a new Course">
-                <span class="fa fa-plus"> Add Course</span>
-            </button>
-        </div>
+        <% if (user.admin) { %>
+            <div class="btn-group pull-right">
+                <button type="button" class="btn btn-primary btn-sm navbar-right" data-toggle="modal" data-target="#create_course_modal" title="Create a new Course">
+                    <span class="fa fa-plus"> Add Course</span>
+                </button>
+            </div>
+        <% } %>
     </div>
 
     <table class="table table-striped table-hover">
@@ -46,11 +48,13 @@
             <td>
                 <div class="btn-group" role="toolbar" aria-label="course controls">
                     <div class="btn-group" role="group">
-                        <button role="button" class="btn btn-default btn-edit-course" data-course-id="<%-courses[i]._id%>" title="Edit Course"><span class="fa fa-pencil"></span></a>
-                        <button role="button" class="btn btn-default btn-delete-course" data-course-id="<%-courses[i]._id%>" title="Delete Course"><span class="fa fa-trash-o"></span></a>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button role="button" class="btn btn-default btn-mail-course" data-course-id="<%-courses[i]._id%>" title="Send Mail to Participants"><span class="fa fa-envelope-o"></span></a>
+                        <% if (user.admin) { %>
+                            <button role="button" class="btn btn-default btn-edit-course" data-course-id="<%-courses[i]._id%>" title="Edit Course"><span class="fa fa-pencil"></span></a>
+                            <button role="button" class="btn btn-default btn-delete-course" data-course-id="<%-courses[i]._id%>" title="Delete Course"><span class="fa fa-trash-o"></span></a>
+                            <button role="button" class="btn btn-default btn-mail-course" data-course-id="<%-courses[i]._id%>" title="Send Mail to Participants"><span class="fa fa-envelope-o"></span></a>
+                        <% } %>
+                        
+                        <button role="button" class="btn btn-default btn-show-course" data-course-id="<%-courses[i]._id%>" title="Show Course Info"><span class="fa fa-info-circle"></span></a>
                     </div>
                 </div>
             </td>

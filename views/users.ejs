@@ -31,6 +31,7 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Courses</th>
+                <th>Admin?</th>
                 <th>Function</th>
             </tr>
         </thead>
@@ -41,6 +42,7 @@
             <td><%- users[i].local.name %></td>
             <td><%- users[i].local.email%></td>
             <td><span class="badge">0</span><%- users[i].courses%></td>
+            <td><% if (users[i].admin) { %><span class="fa fa-check"></span><% } %></td>
             <td>
                 <div class="btn-group" role="toolbar" aria-label="user controls">
                     <div class="btn-group" role="group">
@@ -57,55 +59,28 @@
     </table>
 </div>
 
-<div class="modal fade" id="create_user_modal" tabindex="-1" role="dialog" aria-labelledby="create_user_modal_label" aria-hidden="true">
-    <div class="modal-dialog">
-        <form class="form-horizontal" action="/users" method="POST">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="create_users_modal_label">Create User</h4>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="inputName" class="col-sm-2 control-label">Name</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="inputName" placeholder="Name" name="name">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="inputEmail" class="col-sm-2 control-label">Email</label>
-                        <div class="col-sm-10">
-                            <input type="email" class="form-control" id="inputEmail" placeholder="Email" name="email">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="inputNotify" class="col-sm-2 control-label"></label>
-                        <div class="col-sm-10">
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" id=inputNotify" name="notify"> Notify User?
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Create</button>
-                </div>
-            </div><!-- /.modal-content -->
-        </form>
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+<% modal_user_dialog_title = 'Create User' %>
+<% modal_user_dialog_submit_label = 'Create' %>
+<% modal_user_dialog_show_notify = true %>
+<% modal_user_dialog_id = 'create_user_modal' %>
+<% include partials/modal_user_dialog %>
+
+<% modal_user_dialog_title = 'Edit User' %>
+<% modal_user_dialog_submit_label = 'Save Changes' %>
+<% modal_user_dialog_show_notify = false %>
+<% modal_user_dialog_id = 'edit_user_modal' %>
+<% include partials/modal_user_dialog %>
 
 <%- contentFor('style') %>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href="bower_components/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css">
+<link rel="stylesheet" href="bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.min.css">
 
 <%- contentFor('script') %>
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script src="bower_components/bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js"></script>
+<script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
 
 
 
@@ -136,5 +111,40 @@
             }
         });
     });
+
+    $('.btn-edit-user').click(function() {
+        var row = $(this).parents('tr').children();
+        var id = $(this).data('user-id');
+        var name = row[1].innerHTML;
+        var email = row[2].innerHTML;
+        var isAdmin = row[4].innerHTML.trim() !== "";
+        $('#edit_user_modal_name').val(name);
+        $('#edit_user_modal_email').val(email);
+        $('#edit_user_modal_admin').val(isAdmin);
+        $('#edit_user_modal_admin').bootstrapSwitch('state', isAdmin);
+
+        $('#edit_user_modal').modal();
+
+        $('#edit_user_modal_submit').click(function(e) {
+            e.preventDefault();
+            $.ajax('/users/' + id, {
+                method: 'put',
+                data: {
+                    name:  $('#edit_user_modal_name').val(),
+                    email: $('#edit_user_modal_email').val(),
+                    admin:  $('#edit_user_modal_admin').bootstrapSwitch('state')
+                },
+                success: function() {
+                    window.location = "/users";
+                },
+                error: function() {
+                    alert("failed to update user");
+                }
+            });
+
+        });
+    });
+
+    $(".input-switch").bootstrapSwitch();
 </script>
 

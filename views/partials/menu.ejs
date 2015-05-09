@@ -15,7 +15,9 @@
         <li id="main_menu_home"><a href="/">Home</a></li>
         <% if (typeof user !== 'undefined') { %>
             <li id="main_menu_courses"><a href="/courses"><span class="fa fa-archive"></span> Courses</a></li>
-            <li id="main_menu_users"><a href="/users"><span class="fa fa-users"></span> Users</a></li>
+            <% if (user.admin) { %>
+                <li id="main_menu_users"><a href="/users"><span class="fa fa-users"></span> Users</a></li>
+            <% } %>
             <li id="main_menu_profile"><a href="/profile"><span class="fa fa-user"></span> My Profile</a></li>
         <% } %>
     </ul>

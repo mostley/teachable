@@ -76,6 +76,9 @@ module.exports = function(app, passport) {
         console.log("Creating new User");
 
         var newUser = new User();
+        if (req.user.admin) {
+            newUser.admin              = req.body.admin;
+        }
         newUser.local.name             = req.body.name;
         newUser.local.email            = req.body.email;
         var password                   = req.body.password || Math.random().toString(36).slice(-8);
@@ -95,25 +98,26 @@ module.exports = function(app, passport) {
 
     });
     
-    app.post('/users/:user_id', isLoggedIn, function(req, res) {
-        User.findOne({ '_id' :  req.params.user_id }, function(err, user) {
+    app.put('/users/:id', isAdminLoggedIn, function(req, res) {
+        console.log(req.body);
+        var user = {
+            $set: {
+                admin: req.body.admin,
+                "local.email": req.body.email,
+                "local.name": req.body.name
+            }
+        };
+        User.findByIdAndUpdate(req.params.id, user, function(err, user) {
             if (err) {
+                console.error(err);
+                res.status(500, err).end();
             } else {
-                user.local.email = req.body.email;
-                user.local.name = req.body.name;
-                user.local.password = req.body.password;
-                user.save();
-                // TODO update user
-                res.render('people', {
-                    user : req.user,
-                    users: users,
-                    error: err
-                });
+                res.status(200).end();
             }
         });
     });
 
-    app.delete('/users/:id', isLoggedIn, function(req, res) {
+    app.delete('/users/:id', isAdminLoggedIn, function(req, res) {
         console.log("Delete User '", req.params.id, "'");
         User.findByIdAndRemove(req.params.id, function(err, user) {
             if (err) {
@@ -153,7 +157,7 @@ module.exports = function(app, passport) {
         });
     });
 
-    app.post('/courses', isLoggedIn, function(req, res) {
+    app.post('/courses', isAdminLoggedIn, function(req, res) {
         console.log("Creating new Course");
         console.dir(req.body);
         var teachers = req.body.teachers;
@@ -171,7 +175,7 @@ module.exports = function(app, passport) {
         res.redirect('/courses');
     });
 
-    app.delete('/courses/:id', isLoggedIn, function(req, res) {
+    app.delete('/courses/:id', isAdminLoggedIn, function(req, res) {
         console.log("Delete Course '", req.params.id, "'");
         Course.findByIdAndRemove(req.params.id, function(err, user) {
             if (err) {
@@ -198,6 +202,15 @@ module.exports = function(app, passport) {
 function isLoggedIn(req, res, next) {
 
     if (req.isAuthenticated()){
+        return next();
+    }
+
+    res.redirect('/');
+}
+
+function isAdminLoggedIn(req, res, next) {
+
+    if (req.isAuthenticated() && req.user.admin){
         return next();
     }
 
