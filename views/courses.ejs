@@ -46,15 +46,17 @@
             <td><%- courses[i].dates %></td>
             <td><%- courses[i].participants.map(function(p){ return userDict[p].name; }) %></td>
             <td>
-                <div class="btn-group" role="toolbar" aria-label="course controls">
-                    <div class="btn-group" role="group">
-                        <% if (user.admin) { %>
+                <div class="btn-toolbar" role="toolbar" aria-label="course controls">
+                    <% if (user.admin) { %>
+                        <div class="btn-group" role="group">
                             <button role="button" class="btn btn-default btn-edit-course" data-course-id="<%-courses[i]._id%>" title="Edit Course"><span class="fa fa-pencil"></span></a>
                             <button role="button" class="btn btn-default btn-delete-course" data-course-id="<%-courses[i]._id%>" title="Delete Course"><span class="fa fa-trash-o"></span></a>
                             <button role="button" class="btn btn-default btn-mail-course" data-course-id="<%-courses[i]._id%>" title="Send Mail to Participants"><span class="fa fa-envelope-o"></span></a>
-                        <% } %>
-                        
+                        </div>
+                    <% } %>
+                    <div class="btn-group" role="group">
                         <button role="button" class="btn btn-default btn-show-course" data-course-id="<%-courses[i]._id%>" title="Show Course Info"><span class="fa fa-info-circle"></span></a>
+                        <button role="button" class="btn btn-default btn-participate-course" data-course-id="<%-courses[i]._id%>" title="Participate"><span class="fa fa-check-square-o"></span></a>
                     </div>
                 </div>
             </td>
@@ -100,15 +102,21 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<% mail_modal_title = 'Send Mail to Course Participants' %>
+<% mail_modal_id = 'mail_modal' %>
+<% include partials/mail_modal %>
+
 <%- contentFor('style') %>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
 <link rel="stylesheet" href="bower_components/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css">
+<link rel="stylesheet" href="bower_components/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.min.css">
+
 
 <%- contentFor('script') %>
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script src="bower_components/bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js"></script>
-
+<script src="bower_components/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.all.min.js"></script>
 
 
 <script type="text/javascript">
@@ -137,6 +145,14 @@
                 alert("failed to delete course");
             }
         });
+    });
+    
+    $('.btn-mail-course').click(function() {
+        $('#mail_modal').modal();
+    });
+    
+    $(function() {
+        $('#mail_modal_text').wysihtml5();
     });
 </script>
 
