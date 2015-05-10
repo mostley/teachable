@@ -177,7 +177,7 @@ module.exports = function(app, passport) {
 
     app.delete('/courses/:id', isAdminLoggedIn, function(req, res) {
         console.log("Delete Course '", req.params.id, "'");
-        Course.findByIdAndRemove(req.params.id, function(err, user) {
+        Course.findByIdAndRemove(req.params.id, function(err, course) {
             if (err) {
                 console.error(err);
                 res.status(500, err).end();
@@ -186,6 +186,22 @@ module.exports = function(app, passport) {
                 res.status(200).end();
             }
         });
+    });
+
+    app.get('/courses/:id', isAdminLoggedIn, function(req, res) {
+        if (req.accepts('json')) {
+            Course.findById(req.params.id, function(err, course) {
+                if (err) {
+                    console.error(err);
+                    res.status(500, err).end();
+                } else {
+                    res.setHeader('Content-Type', 'application/json');
+                    res.end(JSON.stringify(course));
+                }
+            });
+        } else {
+            res.status(501, 'not yet implemented').end();
+        }
     });
 
 
