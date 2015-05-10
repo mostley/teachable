@@ -42,21 +42,21 @@
         <tr>
             <td><%- i + 1 %></td>
             <td><%- courses[i].name %></td>
-            <td><%- courses[i].teachers.map(function(p){ return userDict[p].local.name; }).join(', ') %></td>
+            <td><%- courses[i].teachers.map(function(p){ return userDict[p] ? userDict[p].name : ""; }).join(', ') %></td>
             <td><%- courses[i].dates %></td>
             <td><%- courses[i].participants.map(function(p){ return userDict[p].name; }) %></td>
             <td>
                 <div class="btn-toolbar" role="toolbar" aria-label="course controls">
                     <% if (user.admin) { %>
                         <div class="btn-group" role="group">
-                            <button role="button" class="btn btn-default btn-edit-course" data-course-id="<%-courses[i]._id%>" title="Edit Course"><span class="fa fa-pencil"></span></a>
-                            <button role="button" class="btn btn-default btn-delete-course" data-course-id="<%-courses[i]._id%>" title="Delete Course"><span class="fa fa-trash-o"></span></a>
-                            <button role="button" class="btn btn-default btn-mail-course" data-course-id="<%-courses[i]._id%>" title="Send Mail to Participants"><span class="fa fa-envelope-o"></span></a>
+                            <button role="button" class="btn btn-default btn-edit-course" data-course-id="<%-courses[i]._id%>" title="Edit Course"><span class="fa fa-pencil"></span></button>
+                            <button role="button" class="btn btn-default btn-delete-course" data-course-id="<%-courses[i]._id%>" title="Delete Course"><span class="fa fa-trash-o"></span></button>
+                            <button role="button" class="btn btn-default btn-mail-course" data-course-id="<%-courses[i]._id%>" title="Send Mail to Participants"><span class="fa fa-envelope-o"></span></button>
                         </div>
                     <% } %>
                     <div class="btn-group" role="group">
-                        <button role="button" class="btn btn-default btn-show-course" data-course-id="<%-courses[i]._id%>" title="Show Course Info"><span class="fa fa-info-circle"></span></a>
-                        <button role="button" class="btn btn-default btn-participate-course" data-course-id="<%-courses[i]._id%>" title="Participate"><span class="fa fa-check-square-o"></span></a>
+                        <button role="button" class="btn btn-default btn-show-course" data-course-id="<%-courses[i]._id%>" title="Show Course Info"><span class="fa fa-info-circle"></span></button>
+                        <button role="button" class="btn btn-default btn-participate-course" data-course-id="<%-courses[i]._id%>" title="Participate"><span class="fa fa-check-square-o"></span></button>
                     </div>
                 </div>
             </td>
@@ -93,13 +93,15 @@
 
 
 <script type="text/javascript">
+	var users = {
+		<% for (var i=0; i<users.length; i++) { %>
+		    '<%- users[i].id %>': '<%- users[i].local.name %>',
+		<% } %>
+    };
+
     $('.user-input').tokenfield({
         autocomplete: {
-            source: [
-<% for (var i=0; i<users.length; i++) { %>
-    { value: '<%- users[i].id %>', label: '<%- users[i].local.name %>' },
-<% } %>
-            ],
+            source: $.map(users, function(value, key) { return { value: key, label: value }}),
             delay: 100,
             open: function() {
                 $(this).autocomplete('widget').css('z-index', 9055);
@@ -109,15 +111,20 @@
     });
 
     $('.btn-delete-course').click(function() {
-        $.ajax('/courses/' + $(this).data('course-id'), {
-            method: 'delete',
-            success: function() {
-                window.location = "/courses"; 
-            },
-            error: function() {
-                alert("failed to delete course");
-            }
-        });
+        var row = $(this).parents('tr').children();
+        var name = row[1].innerHTML;
+    	var res = confirm("Are you sure you want to delete course '" + name + "'?");
+    	if (res) {
+	        $.ajax('/courses/' + $(this).data('course-id'), {
+	            method: 'delete',
+	            success: function() {
+	                window.location = "/courses"; 
+	            },
+	            error: function() {
+	                alert("failed to delete course");
+	            }
+	        });
+	    }
     });
 
     $('.btn-edit-course').click(function() {
@@ -130,11 +137,25 @@
         		alert("failed to load course");
         	},
         	success: function(course) {
+        		var teachers = course.teachers
+        			.filter(function(id) { return users[id]; })
+        			.map(function(id) { return { value: id, label: users[id]}; });
+
+        		var participants = course.participants
+        			.filter(function(id) { return users[id]; })
+        			.map(function(id) { return { value: id, label: users[id]}; });
+
 		        $('#edit_course_modal_name').val(course.name);
 		        $('#edit_course_modal_teachers').val(course.teachers);
+		        $('#edit_course_modal_teachers').tokenfield('setTokens', teachers);
+		        $('#edit_course_modal_description').val(course.description);
 		        $('#edit_course_modal_date').val(course.date);
-		        $('#edit_course_modal_participants').val(course.participants);
 
+		        $('#edit_course_modal_participant_table').data('participants', []);
+		        var table = $('#edit_course_modal_participant_table');
+		        addParticipant(table, participants);
+
+        		$('#edit_course_modal').data('current-id', id);
 		        $('#edit_course_modal').modal();
         	}
         });
@@ -143,12 +164,16 @@
 
     $('#edit_course_modal_submit').click(function(e) {
         e.preventDefault();
-        $.ajax('/users/' + id, {
-            method: 'put',
+
+        var id = $('#edit_course_modal').data('current-id');
+        $.ajax('/courses/' + id, {
+            method: 'PUT',
             data: {
                 name:  $('#edit_course_modal_name').val(),
-                email: $('#edit_course_modal_email').val(),
-                admin:  $('#edit_course_modal_admin').bootstrapSwitch('state')
+                teachers: $('#edit_course_modal_teachers').val(),
+                date: $('#edit_course_modal_date').val(),
+                description: $('#edit_course_modal_description').val(),
+                participants: $('#edit_course_modal_participant_table').data('participants').join(',')
             },
             success: function() {
                 window.location = "/courses";
@@ -159,6 +184,54 @@
         });
 
     });
+    
+    $('.btn-add-participant').click(function(e) {
+        e.preventDefault();
+
+        var sourceField = $('#' + $(this).data('add-source'));
+
+        var newParticipants = sourceField.tokenfield('getTokens');
+
+        var table = $('#' + $(this).data('add-target'));
+        addParticipant(table, newParticipants);
+        sourceField.tokenfield('setTokens', []);
+    });
+
+	function addParticipant(table, newParticipants) {
+        var tbody = table.children('tbody');
+		var participants = table.data('participants');
+
+        for (var i=0; i<newParticipants.length; i++) {
+        	var participant = newParticipants[i];
+            var row = $('<tr></tr>');
+
+            var id = participant.value;
+            var name = participant.label;
+
+            row.append($('<td>' + participants.length + '</td>'));
+            row.append($('<td>' + name + '</td>'));
+            row.data('id', id);
+            row.append($('<td><button role="button" class="btn btn-default btn-remove-participant" data-participant-id="' + id + '" title="Remove Participant"><span class="fa fa-trash-o"></span></button></td>'));
+
+            tbody.append(row);
+            participants.push(id);
+        }
+        
+        table.data('participants', participants);
+	}
+
+	$('.modal-dialog').on('click', '.btn-remove-participant', function(e) {
+        e.preventDefault();
+
+		var table = $(this).parents('table');
+		var participants = table.data('participants');
+		var index = participants.indexOf($(this).data('participant-id'));
+		if (index >= 0) {
+			participants.splice(index, 1);
+		}
+
+		$(this).parents('tr').remove();
+	});
     
     $('.btn-mail-course').click(function() {
         $('#mail_modal').modal();

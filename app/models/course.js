@@ -5,8 +5,9 @@ var bcrypt   = require('bcrypt-nodejs');
 var courseSchema = mongoose.Schema({
     
     name             : String,
+    description      : String,
     state            : String,
-    dates            : [{ start: Date, duration: Number }],
+    date             : String,
     doodle           : String,
     participants     : [ String ],
     teachers         : [ String ]

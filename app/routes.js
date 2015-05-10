@@ -161,18 +161,53 @@ module.exports = function(app, passport) {
         console.log("Creating new Course");
         console.dir(req.body);
         var teachers = req.body.teachers;
+        var participants = req.body.participants;
 
         var newCourse = new Course({
             name             : req.body.name,
             state            : req.body.state,
-            dates            : req.body.dates,
+            date             : req.body.date,
+            description      : req.body.description,
             doodle           : req.body.doodle,
-            participants     : req.body.participants,
-            teachers         : teachers ? req.body.teachers.split(',') : []
+            participants     : participants ? participants.split(',') : [],
+            teachers         : teachers ? teachers.split(',') : []
         });
         newCourse.save();
 
         res.redirect('/courses');
+    });
+    
+    app.put('/courses/:id', isAdminLoggedIn, function(req, res) {
+        console.log(req.body);
+        var teachers = req.body.teachers;
+        var participants = req.body.participants;
+
+        var course = {
+            $set: {
+                name: req.body.name,
+                date: req.body.date,
+                teachers: teachers ? teachers.split(',') : [],
+                participants: participants ? participants.split(',') : [],
+                description: req.body.description
+            }
+        };
+
+        if (req.body.state) {
+            course.$set.state = req.body.state;
+        }
+
+        if (req.body.doodle) {
+            course.$set.doodle = req.body.doodle;
+        }
+
+        Course.findByIdAndUpdate(req.params.id, course, function(err, course) {
+            if (err) {
+                console.error(err);
+                res.status(500, err).end();
+            } else {
+                res.status(200).end();
+            }
+        });
     });
 
     app.delete('/courses/:id', isAdminLoggedIn, function(req, res) {

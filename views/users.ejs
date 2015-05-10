@@ -103,15 +103,20 @@
     });
 
     $('.btn-delete-user').click(function() {
-        $.ajax('/users/' + $(this).data('user-id'), {
-            method: 'delete',
-            success: function() {
-                window.location = "/users"; 
-            },
-            error: function() {
-                alert("failed to delete user");
-            }
-        });
+        var row = $(this).parents('tr').children();
+        var name = row[1].innerHTML;
+        var res = confirm("Are you sure you want to delete user '" + name + "'?");
+        if (res) {
+            $.ajax('/users/' + $(this).data('user-id'), {
+                method: 'delete',
+                success: function() {
+                    window.location = "/users"; 
+                },
+                error: function() {
+                    alert("failed to delete user");
+                }
+            });
+        }
     });
 
     $('.btn-edit-user').click(function() {
@@ -125,26 +130,29 @@
         $('#edit_user_modal_admin').val(isAdmin);
         $('#edit_user_modal_admin').bootstrapSwitch('state', isAdmin);
 
+        $('#edit_user_modal').data('current-id', id);
         $('#edit_user_modal').modal();
+    });
 
-        $('#edit_user_modal_submit').click(function(e) {
-            e.preventDefault();
-            $.ajax('/users/' + id, {
-                method: 'put',
-                data: {
-                    name:  $('#edit_user_modal_name').val(),
-                    email: $('#edit_user_modal_email').val(),
-                    admin:  $('#edit_user_modal_admin').bootstrapSwitch('state')
-                },
-                success: function() {
-                    window.location = "/users";
-                },
-                error: function() {
-                    alert("failed to update user");
-                }
-            });
+    $('#edit_user_modal_submit').click(function(e) {
+        e.preventDefault();
 
+        var id = $('#edit_user_modal').data('current-id');
+        $.ajax('/users/' + id, {
+            method: 'put',
+            data: {
+                name:  $('#edit_user_modal_name').val(),
+                email: $('#edit_user_modal_email').val(),
+                admin:  $('#edit_user_modal_admin').bootstrapSwitch('state')
+            },
+            success: function() {
+                window.location = "/users";
+            },
+            error: function() {
+                alert("failed to update user");
+            }
         });
+
     });
     
     $(function() {
