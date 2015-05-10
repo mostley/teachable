@@ -1,0 +1,16 @@
+<script type="text/javascript">
+    $('.btn-add-participant').click(function(e) {
+            e.preventDefault();
+
+            var table = $('#' + $(this).data('add-target') + ' tbody');
+            var row = $('<tr></tr>');
+
+            row.append($('<td>test</td>'));
+            row.append($('<td>test</td>'));
+            row.append($('<td>test</td>'));
+
+            table.append(row);
+
+    });
+
+</script>
