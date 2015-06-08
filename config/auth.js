@@ -1,6 +1,6 @@
 
 // expose our config directly to our application using module.exports
-moule.exports = {
+module.exports = {
 
     'facebookAuth' : {
         'clientID'      : 'your-secret-clientID-here',
