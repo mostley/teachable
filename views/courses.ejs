@@ -41,7 +41,15 @@
 <% for (var i=0; i<courses.length; i++) { %>
         <tr>
             <td><%- i + 1 %></td>
-            <td><%- courses[i].name %></td>
+            <td>
+                <% if (user.admin) { %>
+                    <a href="#" class="btn-edit-course" data-course-id="<%-courses[i]._id%>" title="Edit Course">
+                <% } else { %>
+                    <a href="#" class="btn-show-course" data-course-id="<%-courses[i]._id%>" title="Show Course Info">
+                <% } %>
+                    <%- courses[i].name %>
+                </a>
+            </td>
             <td><%- courses[i].teachers.map(function(p){ return userDict[p] ? userDict[p].name : ""; }).join(', ') %></td>
             <td><%- courses[i].dates %></td>
             <td><%- courses[i].participants.map(function(p){ return userDict[p].name; }) %></td>
@@ -56,7 +64,11 @@
                     <% } %>
                     <div class="btn-group" role="group">
                         <button role="button" class="btn btn-default btn-show-course" data-course-id="<%-courses[i]._id%>" title="Show Course Info"><span class="fa fa-info-circle"></span></button>
-                        <button role="button" class="btn btn-default btn-participate-course" data-course-id="<%-courses[i]._id%>" title="Participate"><span class="fa fa-check-square-o"></span></button>
+                        <% if (true) { %>
+                            <button role="button" class="btn btn-default btn-participate-course" data-course-id="<%-courses[i]._id%>" title="I want to Participate!"><span class="fa fa-check-square-o"></span></button>
+                        <% } else { %>
+                            <span class="fa fa-check" style="color:green;"></span>
+                        <% } %>
                     </div>
                 </div>
             </td>
