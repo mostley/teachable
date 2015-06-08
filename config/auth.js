@@ -3,14 +3,14 @@
 module.exports = {
 
     'facebookAuth' : {
-        'clientID'      : 'your-secret-clientID-here',
-        'clientSecret'  : 'your-client-secret-here',
+        'clientID'      : '1593172837631110',
+        'clientSecret'  : 'bebd7ed34b8b47cdd36cc4dfd96afcdb',
         'callbackURL'   : 'http://teachable.shdev.de/auth/facebook/callback'
     },
 
     'twitterAuth' : {
-        'consumerKey'       : 'your-consumer-key-here',
-        'consumerSecret'    : 'your-client-secret-here',
+        'consumerKey'       : 'rnaiQP30dvbJYuzmlhtuzFLPt',
+        'consumerSecret'    : 'DhitCUURk581jrsgQYZPRqWWqdfGhhK4oRaWpOV6quo3BIebYU',
         'callbackURL'       : 'http://teachable.shdev.de/auth/twitter/callback'
     },
 

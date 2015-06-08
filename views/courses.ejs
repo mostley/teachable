@@ -50,9 +50,9 @@
                     <%- courses[i].name %>
                 </a>
             </td>
-            <td><%- courses[i].teachers.map(function(p){ return userDict[p] ? userDict[p].name : ""; }).join(', ') %></td>
+            <td><%- courses[i].teachers.map(function(p){ return userDict[p] ? userDict[p].getName() : ""; }).join(', ') %></td>
             <td><%- courses[i].dates %></td>
-            <td><%- courses[i].participants.map(function(p){ return userDict[p].name; }) %></td>
+            <td><%- courses[i].participants.map(function(p){ return userDict[p].getName(); }) %></td>
             <td>
                 <div class="btn-toolbar" role="toolbar" aria-label="course controls">
                     <% if (user.admin) { %>
@@ -107,7 +107,7 @@
 <script type="text/javascript">
 	var users = {
 		<% for (var i=0; i<users.length; i++) { %>
-		    '<%- users[i].id %>': '<%- users[i].local.name %>',
+		    '<%- users[i].id %>': '<%- users[i].getName() %>',
 		<% } %>
     };
 
