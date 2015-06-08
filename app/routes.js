@@ -1,7 +1,7 @@
-
 var User            = require('../app/models/user');
 var Course          = require('../app/models/course');
 var Mailer          = require('../app/mailer');
+var logger          = require('../app/log');
 
 module.exports = function(app, passport) {
 
@@ -39,7 +39,7 @@ module.exports = function(app, passport) {
     });
 
     app.post('/users', isLoggedIn, function(req, res) {
-        console.log("Creating new User");
+        logger.log("Creating new User");
 
         var newUser = new User();
         if (req.user.admin) {
@@ -53,7 +53,7 @@ module.exports = function(app, passport) {
         newUser.save();
 
         if (req.body.notify) {
-            console.log("notifying the user '" + newUser.local.name + "' ('" + newUser.local.email + "')");
+            logger.log("notifying the user '" + newUser.local.name + "' ('" + newUser.local.email + "')");
 
             Mailer.send(newUser.local.email, 'Neues Konto auf Teachable', "Ihr neuer Nutzer ist: '" + newUser.local.name + "' und Ihr PassworT: '" + password + "'. Damit können Sie sich direkt auf <a href=\"shdev.de:3333\">Teachable</a> anmelden.", function() {
                 res.redirect('/users');
@@ -65,7 +65,7 @@ module.exports = function(app, passport) {
     });
     
     app.put('/users/:id', isAdminLoggedIn, function(req, res) {
-        console.log(req.body);
+        logger.log(req.body);
         var user = {
             $set: {
                 admin: req.body.admin,
@@ -75,7 +75,7 @@ module.exports = function(app, passport) {
         };
         User.findByIdAndUpdate(req.params.id, user, function(err, user) {
             if (err) {
-                console.error(err);
+                logger.error(err);
                 res.status(500, err).end();
             } else {
                 res.status(200).end();
@@ -84,13 +84,13 @@ module.exports = function(app, passport) {
     });
 
     app.delete('/users/:id', isAdminLoggedIn, function(req, res) {
-        console.log("Delete User '", req.params.id, "'");
+        logger.log("Delete User '", req.params.id, "'");
         User.findByIdAndRemove(req.params.id, function(err, user) {
             if (err) {
-                console.error(err);
+                logger.error(err);
                 res.status(500, err).end();
             } else {
-                console.error("deleted.");
+                logger.error("deleted.");
                 res.status(200).end();
             }
         });
@@ -124,8 +124,8 @@ module.exports = function(app, passport) {
     });
 
     app.post('/courses', isAdminLoggedIn, function(req, res) {
-        console.log("Creating new Course");
-        console.dir(req.body);
+        logger.log("Creating new Course");
+
         var teachers = req.body.teachers;
         var participants = req.body.participants;
 
@@ -144,7 +144,9 @@ module.exports = function(app, passport) {
     });
     
     app.put('/courses/:id', isAdminLoggedIn, function(req, res) {
-        console.log(req.body);
+        logger.log("Updating Course");
+        logger.log(req.body);
+
         var teachers = req.body.teachers;
         var participants = req.body.participants;
 
@@ -168,7 +170,7 @@ module.exports = function(app, passport) {
 
         Course.findByIdAndUpdate(req.params.id, course, function(err, course) {
             if (err) {
-                console.error(err);
+                logger.error(err);
                 res.status(500, err).end();
             } else {
                 res.status(200).end();
@@ -177,13 +179,55 @@ module.exports = function(app, passport) {
     });
 
     app.delete('/courses/:id', isAdminLoggedIn, function(req, res) {
-        console.log("Delete Course '", req.params.id, "'");
+        logger.log("Delete Course '", req.params.id, "'");
+
         Course.findByIdAndRemove(req.params.id, function(err, course) {
             if (err) {
-                console.error(err);
+                logger.error(err);
                 res.status(500, err).end();
             } else {
-                console.error("deleted.");
+                logger.log("deleted.");
+                res.status(200).end();
+            }
+        });
+    });
+    
+    app.post('/courses/:id/participants', isLoggedIn, function(req, res) {
+        var course_id = req.params.id;
+        logger.log("Adding Participant to Course '", course_id, "'");
+
+        var course = {
+            $addToSet: {
+                participants: [ req.body.participant ],
+            }
+        };
+
+        Course.findByIdAndUpdate(req.params.id, course, function(err, course) {
+            if (err) {
+                logger.error(err);
+                res.status(500, err).end();
+            } else {
+                res.status(200).end();
+            }
+        });
+    });
+    
+    app.delete('/courses/:id/participants', isLoggedIn, function(req, res) {
+        var course_id = req.params.id;
+        var participant_id = req.body.participant;
+        logger.log("Removing Participant '" + participant_id + "' from Course '", course_id, "'");
+
+        var course = {
+            $pull: {
+                participants: [ participant_id ],
+            }
+        };
+
+        Course.findByIdAndUpdate(req.params.id, course, function(err, course) {
+            if (err) {
+                logger.error(err);
+                res.status(500, err).end();
+            } else {
                 res.status(200).end();
             }
         });

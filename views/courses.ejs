@@ -26,7 +26,7 @@
         <% } %>
     </div>
 
-    <table class="table table-striped table-hover">
+    <table class="table table-striped table-hover table-courses">
         <thead>
             <tr>
                 <th>#</th>
@@ -64,10 +64,12 @@
                     <% } %>
                     <div class="btn-group" role="group">
                         <button role="button" class="btn btn-default btn-show-course" data-course-id="<%-courses[i]._id%>" title="Show Course Info"><span class="fa fa-info-circle"></span></button>
-                        <% if (true) { %>
-                            <button role="button" class="btn btn-default btn-participate-course" data-course-id="<%-courses[i]._id%>" title="I want to Participate!"><span class="fa fa-check-square-o"></span></button>
+                        <% if (courses[i].participants.indexOf(user.id) == -1) { %>
+                            <button role="button" class="btn btn-default btn-participate-course" data-course-id="<%-courses[i]._id%>" title="I want to Participate!"><span class="fa fa-square-o"></span></button>
                         <% } else { %>
-                            <span class="fa fa-check" style="color:green;"></span>
+                            <button role="button" class="btn btn-default btn-not-participate-course" data-course-id="<%-courses[i]._id%>" title="I don't want to Participate anymore!">
+                                <span class="fa fa-check-square-o"></span>
+                            </button>
                         <% } %>
                     </div>
                 </div>
@@ -103,8 +105,11 @@
 <script src="bower_components/bootstrap-tokenfield/dist/bootstrap-tokenfield.min.js"></script>
 <script src="bower_components/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.all.min.js"></script>
 
+<% include partials/wait_dialog %>
+
 
 <script type="text/javascript">
+    var current_user_id = '<%- user.id %>';
 	var users = {
 		<% for (var i=0; i<users.length; i++) { %>
 		    '<%- users[i].id %>': '<%- users[i].getName() %>',
@@ -127,12 +132,16 @@
         var name = row[1].innerHTML;
     	var res = confirm("Are you sure you want to delete course '" + name + "'?");
     	if (res) {
+            waitDialog.show();
+
 	        $.ajax('/courses/' + $(this).data('course-id'), {
 	            method: 'delete',
 	            success: function() {
 	                window.location = "/courses"; 
 	            },
 	            error: function() {
+                    waitDialog.hide();
+
 	                alert("failed to delete course");
 	            }
 	        });
@@ -143,9 +152,13 @@
         var row = $(this).parents('tr').children();
         var id = $(this).data('course-id');
 
+        waitDialog.show();
+
         $.ajax('/courses/' + id, {
             dataType: 'json',
         	error: function() {
+                waitDialog.hide();
+
         		alert("failed to load course");
         	},
         	success: function(course) {
@@ -168,6 +181,8 @@
 		        addParticipant(table, participants);
 
         		$('#edit_course_modal').data('current-id', id);
+                
+                waitDialog.hide();
 		        $('#edit_course_modal').modal();
         	}
         });
@@ -176,6 +191,8 @@
 
     $('#edit_course_modal_submit').click(function(e) {
         e.preventDefault();
+
+        waitDialog.show();
 
         var id = $('#edit_course_modal').data('current-id');
         $.ajax('/courses/' + id, {
@@ -191,6 +208,8 @@
                 window.location = "/courses";
             },
             error: function() {
+                waitDialog.hide();
+
                 alert("failed to update course");
             }
         });
@@ -247,6 +266,48 @@
     
     $('.btn-mail-course').click(function() {
         $('#mail_modal').modal();
+    });
+
+    $('.btn-participate-course').click(function(e) {
+        var id = $(this).data('course-id');
+
+        waitDialog.show();
+
+        $.ajax('/courses/' + id + '/participants', {
+            method: 'POST',
+            data: {
+                participant: current_user_id
+            },
+            success: function() {
+                window.location = "/courses";
+            },
+            error: function() {
+                waitDialog.hide();
+
+                alert("failed to update course");
+            }
+        });
+    });
+
+    $('.btn-not-participate-course').click(function(e) {
+        var id = $(this).data('course-id');
+
+        waitDialog.show();
+
+        $.ajax('/courses/' + id + '/participants', {
+            method: 'DELETE',
+            data: {
+                participant: current_user_id
+            },
+            success: function() {
+                window.location = "/courses";
+            },
+            error: function() {
+                waitDialog.hide();
+
+                alert("failed to update course");
+            }
+        });
     });
     
     $(function() {
