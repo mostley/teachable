@@ -29,7 +29,7 @@
                         <div class="form-group">
                             <label for="localInputPassword" class="col-sm-2 control-label">Password</label>
                             <div class="col-sm-10">
-                                <input id="localInputPassword" class="form-control input-sm" type="text" placeholder="Name" value="<%= user.local.password%>" name="password" />
+                                <input id="localInputPassword" class="form-control input-sm" type="password" placeholder="Name" value="<%= user.local.password%>" name="password" />
                             </div>
                         </div>
                     
@@ -53,7 +53,7 @@
                 <% if (user.facebook.token) { %>
                     <p>
                         <strong>id</strong>: <%= user.facebook.id %><br>
-                        <strong>token</strong>: <%= user.facebook.token %><br>
+                        <!--<strong>token</strong>: <%= user.facebook.token %><br>-->
                         <strong>email</strong>: <%= user.facebook.email %><br>
                         <strong>name</strong>: <%= user.facebook.name %><br>
                     </p>
@@ -76,7 +76,7 @@
                 <% if (user.twitter.token) { %>
                     <p>
                         <strong>id</strong>: <%= user.twitter.id %><br>
-                        <strong>token</strong>: <%= user.twitter.token %><br>
+                        <!--<strong>token</strong>: <%= user.twitter.token %><br>-->
                         <strong>display name</strong>: <%= user.twitter.displayName %><br>
                         <strong>username</strong>: <%= user.twitter.username %>
                     </p>
@@ -97,7 +97,7 @@
                 <% if (user.google.token) { %>
                     <p>
                         <strong>id</strong>: <%= user.google.id %><br>
-                        <strong>token</strong>: <%= user.google.token %><br>
+                        <!--<strong>token</strong>: <%= user.google.token %><br>-->
                         <strong>email</strong>: <%= user.google.email %><br>
                         <strong>name</strong>: <%= user.google.name %>
                     </p>
