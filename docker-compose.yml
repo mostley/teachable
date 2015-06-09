@@ -1,0 +1,10 @@
+web:
+  build: .
+  links:
+   - "db:mongo"
+  ports:
+   - "3333:3333"
+  volumes:
+   - .:/src
+db:
+  image: mongo
