@@ -1,9 +1,21 @@
 {
   "name": "teachable",
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "description": "a Course Management Webapp",
+  "author": "Sven Hecht <sven.hecht@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:mostley/teachable.git"
+  },
+  "keywords": [
+    "learning",
+    "platform",
+    "course",
+    "management"
+  ],
   "private": false,
   "dependencies": {
-    "express": "~4.0.0",
+    "express": "~4.9.0",
     "ejs": "~0.8.5",
     "mongoose": "~3.8.1",
     "passport": "~0.1.17",
@@ -28,5 +40,10 @@
     "gulp-sass": "^2.0.0",
     "node-bourbon": "^4.2.2",
     "gulp-sourcemaps": "^1.5.2"
-  }
+  },
+  "scripts": {
+    "start": "nodemon -L server.js"
+  },
+  "license": "MIT",
+  "readme": "README"
 }
