@@ -45,7 +45,7 @@
                 <% if (user.admin) { %>
                     <a href="#" class="btn-edit-course" data-course-id="<%-courses[i]._id%>" title="Edit Course">
                 <% } else { %>
-                    <a href="#" class="btn-show-course" data-course-id="<%-courses[i]._id%>" title="Show Course Info">
+                    <a href="<%- courses[i].infolink %>" class="btn-show-course" data-course-id="<%-courses[i]._id%>" title="Show Course Info">
                 <% } %>
                     <%- courses[i].name %>
                 </a>
@@ -63,7 +63,7 @@
                         </div>
                     <% } %>
                     <div class="btn-group" role="group">
-                        <button role="button" class="btn btn-default btn-show-course" data-course-id="<%-courses[i]._id%>" title="Show Course Info"><span class="fa fa-info-circle"></span></button>
+                        <a href="<%- courses[i].infolink %>" role="button" class="btn btn-default btn-show-course" data-course-id="<%-courses[i]._id%>" title="Show Course Info"><span class="fa fa-info-circle"></span></a>
                         <% if (courses[i].participants.indexOf(user.id) == -1) { %>
                             <button role="button" class="btn btn-default btn-participate-course" data-course-id="<%-courses[i]._id%>" title="I want to Participate!"><span class="fa fa-square-o"></span></button>
                         <% } else { %>
@@ -137,7 +137,7 @@
 	        $.ajax('/courses/' + $(this).data('course-id'), {
 	            method: 'delete',
 	            success: function() {
-	                window.location = "/courses"; 
+	                window.location = "/courses";
 	            },
 	            error: function() {
                     waitDialog.hide();
@@ -181,7 +181,7 @@
 		        addParticipant(table, participants);
 
         		$('#edit_course_modal').data('current-id', id);
-                
+
                 waitDialog.hide();
 		        $('#edit_course_modal').modal();
         	}
@@ -215,7 +215,7 @@
         });
 
     });
-    
+
     $('.btn-add-participant').click(function(e) {
         e.preventDefault();
 
@@ -247,7 +247,7 @@
             tbody.append(row);
             participants.push(id);
         }
-        
+
         table.data('participants', participants);
 	}
 
@@ -263,7 +263,7 @@
 
 		$(this).parents('tr').remove();
 	});
-    
+
     $('.btn-mail-course').click(function() {
         $('#mail_modal').modal();
     });
@@ -309,9 +309,11 @@
             }
         });
     });
-    
+
     $(function() {
         $('#mail_modal_text').wysihtml5();
+
+        $("a.btn-show-course[href='']").attr('disabled', true);
     });
 </script>
 

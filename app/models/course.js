@@ -3,14 +3,15 @@ var bcrypt   = require('bcrypt-nodejs');
 
 // define the schema for our course model
 var courseSchema = mongoose.Schema({
-    
+
     name             : String,
     description      : String,
     state            : String,
     date             : String,
     doodle           : String,
     participants     : [ String ],
-    teachers         : [ String ]
+    teachers         : [ String ],
+    infolink         : String
 });
 
 // methods ======================
