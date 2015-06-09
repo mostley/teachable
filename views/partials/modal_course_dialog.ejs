@@ -27,6 +27,12 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="<%-modal_course_dialog_id%>_infolink" class="col-sm-2 control-label">Info Link</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control user-input" id="<%-modal_course_dialog_id%>_infolink" placeholder="Enter Info Link" name="infolink">
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label for="<%-modal_course_dialog_id%>_description" class="col-sm-2 control-label">Description</label>
                         <div class="col-sm-10">
                             <textarea class="form-control" id="<%-modal_course_dialog_id%>_description" placeholder="Enter Description" rows="3" name="description"></textarea>
@@ -39,10 +45,10 @@
                                 Participants
                             </div>
                             <div class="btn-group pull-right">
-                                <a  href="#" 
-                                    class="btn btn-default btn-add-participant" 
-                                    data-add-source="<%-modal_course_dialog_id%>_new_participant" 
-                                    data-add-target="<%-modal_course_dialog_id%>_participant_table" 
+                                <a  href="#"
+                                    class="btn btn-default btn-add-participant"
+                                    data-add-source="<%-modal_course_dialog_id%>_new_participant"
+                                    data-add-target="<%-modal_course_dialog_id%>_participant_table"
                                     title="Add Participants"><span class="fa fa-plus"></span></a>
                             </div>
                             <div class="btn-group pull-right">
@@ -51,7 +57,7 @@
                         </div>
 
                         <table class="table table-striped" id="<%-modal_course_dialog_id%>_participant_table">
-                            <thead> 
+                            <thead>
                                 <tr>
                                     <th>#</th>
                                     <th>Name</th>

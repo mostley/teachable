@@ -23,7 +23,7 @@ module.exports = function(app, passport) {
             user : req.user
         });
     });
- 
+
     // =====================================
     // USERS SECTION =====================
     // =====================================
@@ -49,7 +49,7 @@ module.exports = function(app, passport) {
         newUser.local.email            = req.body.email;
         var password                   = req.body.password || Math.random().toString(36).slice(-8);
         newUser.local.password         = newUser.generateHash(password);
-        
+
         newUser.save();
 
         if (req.body.notify) {
@@ -63,7 +63,7 @@ module.exports = function(app, passport) {
         }
 
     });
-    
+
     app.put('/users/:id', isAdminLoggedIn, function(req, res) {
         logger.log(req.body);
         var user = {
@@ -124,7 +124,7 @@ module.exports = function(app, passport) {
     });
 
     app.post('/courses', isAdminLoggedIn, function(req, res) {
-        logger.log("Creating new Course");
+        logger.log('Creating new Course');
 
         var teachers = req.body.teachers;
         var participants = req.body.participants;
@@ -135,6 +135,7 @@ module.exports = function(app, passport) {
             date             : req.body.date,
             description      : req.body.description,
             doodle           : req.body.doodle,
+            infolink         : req.body.infolink,
             participants     : participants ? participants.split(',') : [],
             teachers         : teachers ? teachers.split(',') : []
         });
@@ -142,9 +143,9 @@ module.exports = function(app, passport) {
 
         res.redirect('/courses');
     });
-    
+
     app.put('/courses/:id', isAdminLoggedIn, function(req, res) {
-        logger.log("Updating Course");
+        logger.log('Updating Course');
         logger.log(req.body);
 
         var teachers = req.body.teachers;
@@ -191,7 +192,7 @@ module.exports = function(app, passport) {
             }
         });
     });
-    
+
     app.post('/courses/:id/participants', isLoggedIn, function(req, res) {
         var course_id = req.params.id;
         logger.log("Adding Participant to Course '", course_id, "'");
@@ -211,7 +212,7 @@ module.exports = function(app, passport) {
             }
         });
     });
-    
+
     app.delete('/courses/:id/participants', isLoggedIn, function(req, res) {
         var course_id = req.params.id;
         var participant_id = req.body.participant;
@@ -256,7 +257,7 @@ module.exports = function(app, passport) {
             res.render('login', { message: msg, hasMessage: msg.length > 0 });
         });
 
-        
+
         // process the login form
         app.post('/login', passport.authenticate('local-login', {
             successRedirect : '/courses', // redirect to the secure profile section
@@ -410,7 +411,7 @@ module.exports = function(app, passport) {
         user.save(function(err) {
            res.redirect('/profile');
         });
-    }); 
+    });
 };
 
 
