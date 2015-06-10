@@ -46,5 +46,9 @@ userSchema.methods.getName = function() {
     return this.local.name || this.facebook.name || this.google.name || this.twitter.displayName;
 };
 
+userSchema.methods.getEmail = function() {
+    return this.local.email || this.facebook.email || this.google.email;
+};
+
 // create the model for users and expose it to our app
 module.exports = mongoose.model('User', userSchema);

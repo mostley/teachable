@@ -7,9 +7,10 @@ var mailOptions = {
 };
 
 module.exports = {
-    send: function(to, subject, text, callback) {
+    send: function(to, cc, subject, text, callback) {
         console.log("Sending mail to '" + to + "' with the subject '" + subject + "'");
         mailOptions.to = to;
+        mailOptions.cc = cc;
         mailOptions.subject = "[Teachable] " + subject;
         mailOptions.html = text;
 
@@ -17,7 +18,7 @@ module.exports = {
             if (err) {
                 console.error(err);
             } else {
-                console.log('Message sent: ' + info.response);
+                console.log('Message sent: ', info);
             }
 
             callback(err, info);

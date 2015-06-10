@@ -43,12 +43,10 @@
             <td><%- i + 1 %></td>
             <td>
                 <% if (user.admin) { %>
-                    <a href="#" class="btn-edit-course" data-course-id="<%-courses[i]._id%>" title="Edit Course">
+                    <a href="#" class="btn-edit-course" data-course-id="<%-courses[i]._id%>" title="Edit Course"><%- courses[i].name %></a>
                 <% } else { %>
-                    <a href="<%- courses[i].infolink %>" class="btn-show-course" data-course-id="<%-courses[i]._id%>" title="Show Course Info">
+                    <a href="<%- courses[i].infolink %>" target="_blank" class="btn-show-course" data-course-id="<%-courses[i]._id%>" title="Show Course Info"><%- courses[i].name %></a>
                 <% } %>
-                    <%- courses[i].name %>
-                </a>
             </td>
             <td><%- courses[i].teachers.map(function(p){ return userDict[p] ? userDict[p].getName() : ""; }).join(', ') %></td>
             <td><%- courses[i].dates %></td>
@@ -57,17 +55,20 @@
                 <div class="btn-toolbar" role="toolbar" aria-label="course controls">
                     <% if (user.admin) { %>
                         <div class="btn-group" role="group">
-                            <button role="button" class="btn btn-default btn-edit-course" data-course-id="<%-courses[i]._id%>" title="Edit Course"><span class="fa fa-pencil"></span></button>
-                            <button role="button" class="btn btn-default btn-delete-course" data-course-id="<%-courses[i]._id%>" title="Delete Course"><span class="fa fa-trash-o"></span></button>
-                            <button role="button" class="btn btn-default btn-mail-course" data-course-id="<%-courses[i]._id%>" title="Send Mail to Participants"><span class="fa fa-envelope-o"></span></button>
+                            <% /* Edit Course */ %>
+                            <button role="button" class="btn btn-default btn-edit-course" data-course-id="<%-courses[i]._id%>" data-toggle="tooltip" data-placement="top" title="Edit Course"><span class="fa fa-pencil"></span></button>
+                            <% /* Delete Course */ %>
+                            <button role="button" class="btn btn-default btn-delete-course" data-course-id="<%-courses[i]._id%>" data-toggle="tooltip" data-placement="top" title="Delete Course"><span class="fa fa-trash-o"></span></button>
+                            <% /* Send Mail to Course */ %>
+                            <button role="button" class="btn btn-default btn-mail-course" data-course-id="<%-courses[i]._id%>" data-toggle="tooltip" data-placement="top" data-number-participants="<%-courses[i].participants.length%>" title="Send Mail to Participants"><span class="fa fa-envelope-o"></span></button>
                         </div>
                     <% } %>
                     <div class="btn-group" role="group">
-                        <a href="<%- courses[i].infolink %>" role="button" class="btn btn-default btn-show-course" data-course-id="<%-courses[i]._id%>" title="Show Course Info"><span class="fa fa-info-circle"></span></a>
+                        <a href="<%- courses[i].infolink %>" target="_blank" role="button" class="btn btn-default btn-show-course" data-course-id="<%-courses[i]._id%>" data-toggle="tooltip" data-placement="top" title="Show Course Info"><span class="fa fa-info-circle"></span></a>
                         <% if (courses[i].participants.indexOf(user.id) == -1) { %>
-                            <button role="button" class="btn btn-default btn-participate-course" data-course-id="<%-courses[i]._id%>" title="I want to Participate!"><span class="fa fa-square-o"></span></button>
+                            <button role="button" class="btn btn-default btn-participate-course" data-course-id="<%-courses[i]._id%>" data-toggle="tooltip" data-placement="top" title="I want to Participate!"><span class="fa fa-square-o"></span></button>
                         <% } else { %>
-                            <button role="button" class="btn btn-default btn-not-participate-course" data-course-id="<%-courses[i]._id%>" title="I don't want to Participate anymore!">
+                            <button role="button" class="btn btn-default btn-not-participate-course" data-course-id="<%-courses[i]._id%>" data-toggle="tooltip" data-placement="top" title="I don't want to Participate anymore!">
                                 <span class="fa fa-check-square-o"></span>
                             </button>
                         <% } %>
@@ -93,11 +94,6 @@
 <% mail_modal_id = 'mail_modal' %>
 <% include partials/mail_modal %>
 
-<%- contentFor('style') %>
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
-<link rel="stylesheet" href="bower_components/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css">
-<link rel="stylesheet" href="bower_components/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.min.css">
-
 
 <%- contentFor('script') %>
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
@@ -110,10 +106,10 @@
 
 <script type="text/javascript">
     var current_user_id = '<%- user.id %>';
-	var users = {
-		<% for (var i=0; i<users.length; i++) { %>
-		    '<%- users[i].id %>': '<%- users[i].getName() %>',
-		<% } %>
+    var users = {
+        <% for (var i=0; i<users.length; i++) { %>
+            '<%- users[i].id %>': '<%- users[i].getName() %>',
+        <% } %>
     };
 
     $('.user-input').tokenfield({
@@ -130,22 +126,22 @@
     $('.btn-delete-course').click(function() {
         var row = $(this).parents('tr').children();
         var name = row[1].innerHTML;
-    	var res = confirm("Are you sure you want to delete course '" + name + "'?");
-    	if (res) {
+        var res = confirm("Are you sure you want to delete course '" + name + "'?");
+        if (res) {
             waitDialog.show();
 
-	        $.ajax('/courses/' + $(this).data('course-id'), {
-	            method: 'delete',
-	            success: function() {
-	                window.location = "/courses";
-	            },
-	            error: function() {
+            $.ajax('/courses/' + $(this).data('course-id'), {
+                method: 'delete',
+                success: function() {
+                    window.location = "/courses";
+                },
+                error: function() {
                     waitDialog.hide();
 
-	                alert("failed to delete course");
-	            }
-	        });
-	    }
+                    alert("failed to delete course");
+                }
+            });
+        }
     });
 
     $('.btn-edit-course').click(function() {
@@ -156,35 +152,36 @@
 
         $.ajax('/courses/' + id, {
             dataType: 'json',
-        	error: function() {
+            error: function(err) {
+                console.error(error);
                 waitDialog.hide();
 
-        		alert("failed to load course");
-        	},
-        	success: function(course) {
-        		var teachers = course.teachers
-        			.filter(function(id) { return users[id]; })
-        			.map(function(id) { return { value: id, label: users[id]}; });
+                alert("failed to load course");
+            },
+            success: function(course) {
+                var teachers = course.teachers
+                    .filter(function(id) { return users[id]; })
+                    .map(function(id) { return { value: id, label: users[id]}; });
 
-        		var participants = course.participants
-        			.filter(function(id) { return users[id]; })
-        			.map(function(id) { return { value: id, label: users[id]}; });
+                var participants = course.participants
+                    .filter(function(id) { return users[id]; })
+                    .map(function(id) { return { value: id, label: users[id]}; });
 
-		        $('#edit_course_modal_name').val(course.name);
-		        $('#edit_course_modal_teachers').val(course.teachers);
-		        $('#edit_course_modal_teachers').tokenfield('setTokens', teachers);
-		        $('#edit_course_modal_description').val(course.description);
-		        $('#edit_course_modal_date').val(course.date);
+                $('#edit_course_modal_name').val(course.name);
+                $('#edit_course_modal_teachers').val(course.teachers);
+                $('#edit_course_modal_teachers').tokenfield('setTokens', teachers);
+                $('#edit_course_modal_description').val(course.description);
+                $('#edit_course_modal_date').val(course.date);
 
-		        $('#edit_course_modal_participant_table').data('participants', []);
-		        var table = $('#edit_course_modal_participant_table');
-		        addParticipant(table, participants);
+                $('#edit_course_modal_participant_table').data('participants', []);
+                var table = $('#edit_course_modal_participant_table');
+                addParticipant(table, participants);
 
-        		$('#edit_course_modal').data('current-id', id);
+                $('#edit_course_modal').data('current-id', id);
 
                 waitDialog.hide();
-		        $('#edit_course_modal').modal();
-        	}
+                $('#edit_course_modal').modal();
+            }
         });
 
     });
@@ -228,12 +225,12 @@
         sourceField.tokenfield('setTokens', []);
     });
 
-	function addParticipant(table, newParticipants) {
+    function addParticipant(table, newParticipants) {
         var tbody = table.children('tbody');
-		var participants = table.data('participants');
+        var participants = table.data('participants');
 
         for (var i=0; i<newParticipants.length; i++) {
-        	var participant = newParticipants[i];
+            var participant = newParticipants[i];
             var row = $('<tr></tr>');
 
             var id = participant.value;
@@ -249,20 +246,20 @@
         }
 
         table.data('participants', participants);
-	}
+    }
 
-	$('.modal-dialog').on('click', '.btn-remove-participant', function(e) {
+    $('.modal-dialog').on('click', '.btn-remove-participant', function(e) {
         e.preventDefault();
 
-		var table = $(this).parents('table');
-		var participants = table.data('participants');
-		var index = participants.indexOf($(this).data('participant-id'));
-		if (index >= 0) {
-			participants.splice(index, 1);
-		}
+        var table = $(this).parents('table');
+        var participants = table.data('participants');
+        var index = participants.indexOf($(this).data('participant-id'));
+        if (index >= 0) {
+            participants.splice(index, 1);
+        }
 
-		$(this).parents('tr').remove();
-	});
+        $(this).parents('tr').remove();
+    });
 
     $('.btn-mail-course').click(function() {
         $('#mail_modal').modal();
@@ -313,8 +310,32 @@
     $(function() {
         $('#mail_modal_text').wysihtml5();
 
-        $("a.btn-show-course[href='']").attr('disabled', true);
+        $("a.btn-show-course[href='']")
+            .attr('disabled', true)
+            .wrap($('<div title="no infolink set up" class="disable-wrapper" data-toggle="tooltip" data-placement="top" />'));
+
+        $('.btn-mail-course[data-number-participants=0]')
+            .attr('disabled', true)
+            .wrap($('<div title="no participants yet" class="disable-wrapper" data-toggle="tooltip" data-placement="top" />'));
+
+
+        $('[data-toggle="tooltip"]').tooltip({container: 'body'});
     });
 </script>
 
 <% include partials/script_create_curse_modal %>
+
+
+<%- contentFor('style') %>
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="bower_components/bootstrap-tokenfield/dist/css/bootstrap-tokenfield.css">
+<link rel="stylesheet" href="bower_components/bootstrap3-wysihtml5-bower/dist/bootstrap3-wysihtml5.min.css">
+
+<style>
+    .disable-wrapper {
+        margin-left:-1px;
+        display: inline-block;
+        position: relative;
+        float: left;
+    }
+</style>

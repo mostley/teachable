@@ -55,7 +55,7 @@ module.exports = function(app, passport) {
         if (req.body.notify) {
             logger.log("notifying the user '" + newUser.local.name + "' ('" + newUser.local.email + "')");
 
-            Mailer.send(newUser.local.email, 'Neues Konto auf Teachable', "Ihr neuer Nutzer ist: '" + newUser.local.name + "' und Ihr PassworT: '" + password + "'. Damit können Sie sich direkt auf <a href=\"shdev.de:3333\">Teachable</a> anmelden.", function() {
+            Mailer.send(newUser.local.email, '', 'Neues Konto auf Teachable', "Ihr neuer Nutzer ist: '" + newUser.local.name + "' und Ihr PassworT: '" + password + "'. Damit können Sie sich direkt auf <a href=\"shdev.de:3333\">Teachable</a> anmelden.", function() {
                 res.redirect('/users');
             });
         } else {
@@ -119,6 +119,21 @@ module.exports = function(app, passport) {
                         error: err
                     });
                 });
+            }
+        });
+    });
+
+
+    app.get('/courses/:id', isLoggedIn, function(req, res) {
+        logger.log('Loading Course');
+
+        Course.findById(req.params.id, function(err, course) {
+            if (err) {
+                res.json({
+                    error: err
+                });
+            } else {
+                res.json(course);
             }
         });
     });
@@ -231,6 +246,57 @@ module.exports = function(app, passport) {
             } else {
                 res.status(200).end();
             }
+        });
+    });
+
+    app.post('/sendmail', isAdminLoggedIn, function(req, res) {
+
+        var course_id = req.params.course_id;
+        var subject = req.params.subject;
+        var cc = req.params.cc;
+        var text = req.params.text;
+
+        logger.log("Sending Mail to  the users of course  '" + course_id + "' (CC: '" + cc + "')");
+        Course.findById(course_id, function(err, course) {
+
+            if (err) {
+                logger.error(err);
+                res.status(500, err).end();
+                return;
+            }
+
+            User.find({
+                _id: { $in: course.participants }
+            }, function(err, users) {
+                if (err) {
+                    logger.error(err);
+                    res.status(500, err).end();
+                    return;
+                }
+
+                var warnings = [];
+                var emails = users.map(function(user) {
+                    var result = user.getEmail();
+
+                    if (!result) {
+                        var warn = 'User "' + user.getName() + "' has no email defined.";
+                        console.warn(warn);
+                        warnings.push(warn);
+                    }
+
+                    return result;
+                });
+
+                Mailer.send(emails, cc, subject, text, function(err, info) {
+                    if (err) {
+                        logger.error(err);
+                        res.status(500, err).end();
+                    } else {
+                        res.status(200).end({ sent: 'OK', warnings: warnings });
+                    }
+                });
+
+            });
         });
     });
 
