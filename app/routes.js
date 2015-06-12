@@ -103,7 +103,7 @@ module.exports = function(app, passport) {
         User.findByIdAndUpdate(req.params.id, user, function(err) {
             if (err) {
                 logger.error(err);
-                res.sendStatus(500, err);
+                res.status(500, err).end();
             } else {
                 res.send(200);
             }
@@ -115,10 +115,10 @@ module.exports = function(app, passport) {
         User.findByIdAndRemove(req.params.id, function(err) {
             if (err) {
                 logger.error(err);
-                res.sendStatus(500, err);
+                res.status(500, err).end();
             } else {
                 logger.error('deleted.');
-                res.sendStatus(200);
+                res.status(200).end();
             }
         });
 
@@ -214,9 +214,9 @@ module.exports = function(app, passport) {
         Course.findByIdAndUpdate(req.params.id, course, function(err) {
             if (err) {
                 logger.error(err);
-                res.sendStatus(500, err);
+                res.status(500, err).end();
             } else {
-                res.sendStatus(200);
+                res.status(200).end();
             }
         });
     });
@@ -227,10 +227,10 @@ module.exports = function(app, passport) {
         Course.findByIdAndRemove(req.params.id, function(err) {
             if (err) {
                 logger.error(err);
-                res.sendStatus(500, err);
+                res.status(500, err).end();
             } else {
                 logger.info('deleted.');
-                res.sendStatus(200);
+                res.status(200).end();
             }
         });
     });
@@ -248,9 +248,9 @@ module.exports = function(app, passport) {
         Course.findByIdAndUpdate(req.params.id, course, function(err) {
             if (err) {
                 logger.error(err);
-                res.sendStatus(500, err);
+                res.status(500, err).end();
             } else {
-                res.sendStatus(200);
+                res.status(200).end();
             }
         });
     });
@@ -269,9 +269,9 @@ module.exports = function(app, passport) {
         Course.findByIdAndUpdate(req.params.id, course, function(err) {
             if (err) {
                 logger.error(err);
-                res.sendStatus(500, err);
+                res.status(500, err).end();
             } else {
-                res.sendStatus(200);
+                res.status(200).end();
             }
         });
     });
@@ -288,7 +288,7 @@ module.exports = function(app, passport) {
 
             if (err) {
                 logger.error(err);
-                res.sendStatus(500, err);
+                res.status(500, err).end();
                 return;
             }
 
@@ -297,7 +297,7 @@ module.exports = function(app, passport) {
             }, function(err, users) {
                 if (err) {
                     logger.error(err);
-                    res.sendStatus(500, err);
+                    res.status(500, err).end();
                     return;
                 }
 
