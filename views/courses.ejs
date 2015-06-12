@@ -262,6 +262,9 @@
     });
 
     $('.btn-mail-course').click(function() {
+        var id = $(this).data('course-id');
+
+        $('#mail_modal_course_id').val(id);
         $('#mail_modal').modal();
     });
 

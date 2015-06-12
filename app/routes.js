@@ -1,7 +1,28 @@
+'use strict';
+
 var User            = require('../app/models/user');
 var Course          = require('../app/models/course');
 var Mailer          = require('../app/mailer');
 var logger          = require('../app/log');
+var querystring     = require('querystring');
+
+function isLoggedIn(req, res, next) {
+
+    if (req.isAuthenticated()){
+        return next();
+    }
+
+    res.redirect('/');
+}
+
+function isAdminLoggedIn(req, res, next) {
+
+    if (req.isAuthenticated() && req.user.admin){
+        return next();
+    }
+
+    res.redirect('/');
+}
 
 module.exports = function(app, passport) {
 
@@ -10,7 +31,7 @@ module.exports = function(app, passport) {
     // =====================================
     // HOME PAGE ===========================
     // =====================================
-    app.get('/', function(req, res, next) {
+    app.get('/', function(req, res) {
         res.render('index');
     });
 
@@ -39,7 +60,7 @@ module.exports = function(app, passport) {
     });
 
     app.post('/users', isLoggedIn, function(req, res) {
-        logger.log("Creating new User");
+        logger.info('Creating new User');
 
         var newUser = new User();
         if (req.user.admin) {
@@ -53,45 +74,51 @@ module.exports = function(app, passport) {
         newUser.save();
 
         if (req.body.notify) {
-            logger.log("notifying the user '" + newUser.local.name + "' ('" + newUser.local.email + "')");
+            logger.info('notifying the user "' + newUser.local.name + '" (' + newUser.local.email + '")');
 
-            Mailer.send(newUser.local.email, '', 'Neues Konto auf Teachable', "Ihr neuer Nutzer ist: '" + newUser.local.name + "' und Ihr PassworT: '" + password + "'. Damit können Sie sich direkt auf <a href=\"shdev.de:3333\">Teachable</a> anmelden.", function() {
+            Mailer.send(
+                newUser.local.email,
+                '',
+                'Neues Konto auf Teachable',
+                'Ihr neuer Nutzer ist: "' + newUser.local.name +
+                '" und Ihr PassworT: "' + password +
+                '". Damit können Sie sich direkt auf <a href="shdev.de:3333">Teachable</a> anmelden.',
+                function() {
                 res.redirect('/users');
             });
         } else {
             res.redirect('/users');
         }
-
     });
 
     app.put('/users/:id', isAdminLoggedIn, function(req, res) {
-        logger.log(req.body);
+        logger.info(req.body);
         var user = {
             $set: {
                 admin: req.body.admin,
-                "local.email": req.body.email,
-                "local.name": req.body.name
+                'local.email': req.body.email,
+                'local.name': req.body.name
             }
         };
-        User.findByIdAndUpdate(req.params.id, user, function(err, user) {
+        User.findByIdAndUpdate(req.params.id, user, function(err) {
             if (err) {
                 logger.error(err);
-                res.status(500, err).end();
+                res.sendStatus(500, err);
             } else {
-                res.status(200).end();
+                res.send(200);
             }
         });
     });
 
     app.delete('/users/:id', isAdminLoggedIn, function(req, res) {
-        logger.log("Delete User '", req.params.id, "'");
-        User.findByIdAndRemove(req.params.id, function(err, user) {
+        logger.info('Delete User "', req.params.id, '"');
+        User.findByIdAndRemove(req.params.id, function(err) {
             if (err) {
                 logger.error(err);
-                res.status(500, err).end();
+                res.sendStatus(500, err);
             } else {
-                logger.error("deleted.");
-                res.status(200).end();
+                logger.error('deleted.');
+                res.sendStatus(200);
             }
         });
 
@@ -125,7 +152,7 @@ module.exports = function(app, passport) {
 
 
     app.get('/courses/:id', isLoggedIn, function(req, res) {
-        logger.log('Loading Course');
+        logger.info('Loading Course');
 
         Course.findById(req.params.id, function(err, course) {
             if (err) {
@@ -139,7 +166,7 @@ module.exports = function(app, passport) {
     });
 
     app.post('/courses', isAdminLoggedIn, function(req, res) {
-        logger.log('Creating new Course');
+        logger.info('Creating new Course');
 
         var teachers = req.body.teachers;
         var participants = req.body.participants;
@@ -160,8 +187,8 @@ module.exports = function(app, passport) {
     });
 
     app.put('/courses/:id', isAdminLoggedIn, function(req, res) {
-        logger.log('Updating Course');
-        logger.log(req.body);
+        logger.info('Updating Course');
+        logger.info(req.body);
 
         var teachers = req.body.teachers;
         var participants = req.body.participants;
@@ -184,33 +211,33 @@ module.exports = function(app, passport) {
             course.$set.doodle = req.body.doodle;
         }
 
-        Course.findByIdAndUpdate(req.params.id, course, function(err, course) {
+        Course.findByIdAndUpdate(req.params.id, course, function(err) {
             if (err) {
                 logger.error(err);
-                res.status(500, err).end();
+                res.sendStatus(500, err);
             } else {
-                res.status(200).end();
+                res.sendStatus(200);
             }
         });
     });
 
     app.delete('/courses/:id', isAdminLoggedIn, function(req, res) {
-        logger.log("Delete Course '", req.params.id, "'");
+        logger.info('Delete Course "', req.params.id, '"');
 
-        Course.findByIdAndRemove(req.params.id, function(err, course) {
+        Course.findByIdAndRemove(req.params.id, function(err) {
             if (err) {
                 logger.error(err);
-                res.status(500, err).end();
+                res.sendStatus(500, err);
             } else {
-                logger.log("deleted.");
-                res.status(200).end();
+                logger.info('deleted.');
+                res.sendStatus(200);
             }
         });
     });
 
     app.post('/courses/:id/participants', isLoggedIn, function(req, res) {
-        var course_id = req.params.id;
-        logger.log("Adding Participant to Course '", course_id, "'");
+        var courseId = req.params.id;
+        logger.info('Adding Participant to Course "', courseId, '"');
 
         var course = {
             $addToSet: {
@@ -218,50 +245,50 @@ module.exports = function(app, passport) {
             }
         };
 
-        Course.findByIdAndUpdate(req.params.id, course, function(err, course) {
+        Course.findByIdAndUpdate(req.params.id, course, function(err) {
             if (err) {
                 logger.error(err);
-                res.status(500, err).end();
+                res.sendStatus(500, err);
             } else {
-                res.status(200).end();
+                res.sendStatus(200);
             }
         });
     });
 
     app.delete('/courses/:id/participants', isLoggedIn, function(req, res) {
-        var course_id = req.params.id;
-        var participant_id = req.body.participant;
-        logger.log("Removing Participant '" + participant_id + "' from Course '", course_id, "'");
+        var courseId = req.params.id;
+        var participantId = req.body.participant;
+        logger.info('Removing Participant "' + participantId + '" from Course "', courseId, '"');
 
         var course = {
             $pull: {
-                participants: [ participant_id ],
+                participants: [ participantId ],
             }
         };
 
-        Course.findByIdAndUpdate(req.params.id, course, function(err, course) {
+        Course.findByIdAndUpdate(req.params.id, course, function(err) {
             if (err) {
                 logger.error(err);
-                res.status(500, err).end();
+                res.sendStatus(500, err);
             } else {
-                res.status(200).end();
+                res.sendStatus(200);
             }
         });
     });
 
-    app.post('/sendmail', isAdminLoggedIn, function(req, res) {
+    app.post('/courses/sendmail', isAdminLoggedIn, function(req, res) {
 
-        var course_id = req.params.course_id;
-        var subject = req.params.subject;
-        var cc = req.params.cc;
-        var text = req.params.text;
+        var courseId = req.body.courseId;
+        var subject = req.body.subject;
+        var cc = req.body.cc;
+        var text = req.body.text;
 
-        logger.log("Sending Mail to  the users of course  '" + course_id + "' (CC: '" + cc + "')");
-        Course.findById(course_id, function(err, course) {
+        logger.info('Sending Mail to  the users of course  "' + courseId + '" (CC: "' + cc + '"');
+        Course.findById(courseId, function(err, course) {
 
             if (err) {
                 logger.error(err);
-                res.status(500, err).end();
+                res.sendStatus(500, err);
                 return;
             }
 
@@ -270,7 +297,7 @@ module.exports = function(app, passport) {
             }, function(err, users) {
                 if (err) {
                     logger.error(err);
-                    res.status(500, err).end();
+                    res.sendStatus(500, err);
                     return;
                 }
 
@@ -279,7 +306,7 @@ module.exports = function(app, passport) {
                     var result = user.getEmail();
 
                     if (!result) {
-                        var warn = 'User "' + user.getName() + "' has no email defined.";
+                        var warn = 'User "' + user.getName() + '" has no email defined.';
                         console.warn(warn);
                         warnings.push(warn);
                     }
@@ -287,13 +314,12 @@ module.exports = function(app, passport) {
                     return result;
                 });
 
-                Mailer.send(emails, cc, subject, text, function(err, info) {
+                Mailer.send(emails, cc, subject, text, function(err) {
                     if (err) {
                         logger.error(err);
-                        res.status(500, err).end();
-                    } else {
-                        res.status(200).end({ sent: 'OK', warnings: warnings });
                     }
+
+                    res.redirect('/courses?' + querystring.stringify({ errors: err , warnings: warnings }));
                 });
 
             });
@@ -318,7 +344,7 @@ module.exports = function(app, passport) {
 
         // LOGIN ===============================
         // show the login form
-        app.get('/login', function(req, res, next) {
+        app.get('/login', function(req, res) {
             var msg = req.flash('loginMessage');
             res.render('login', { message: msg, hasMessage: msg.length > 0 });
         });
@@ -447,7 +473,7 @@ module.exports = function(app, passport) {
         var user            = req.user;
         user.local.email    = undefined;
         user.local.password = undefined;
-        user.save(function(err) {
+        user.save(function() {
             res.redirect('/profile');
         });
     });
@@ -456,7 +482,7 @@ module.exports = function(app, passport) {
     app.get('/unlink/facebook', function(req, res) {
         var user            = req.user;
         user.facebook.token = undefined;
-        user.save(function(err) {
+        user.save(function() {
             res.redirect('/profile');
         });
     });
@@ -465,7 +491,7 @@ module.exports = function(app, passport) {
     app.get('/unlink/twitter', function(req, res) {
         var user           = req.user;
         user.twitter.token = undefined;
-        user.save(function(err) {
+        user.save(function() {
            res.redirect('/profile');
         });
     });
@@ -474,27 +500,8 @@ module.exports = function(app, passport) {
     app.get('/unlink/google', function(req, res) {
         var user          = req.user;
         user.google.token = undefined;
-        user.save(function(err) {
+        user.save(function() {
            res.redirect('/profile');
         });
     });
 };
-
-
-function isLoggedIn(req, res, next) {
-
-    if (req.isAuthenticated()){
-        return next();
-    }
-
-    res.redirect('/');
-}
-
-function isAdminLoggedIn(req, res, next) {
-
-    if (req.isAuthenticated() && req.user.admin){
-        return next();
-    }
-
-    res.redirect('/');
-}

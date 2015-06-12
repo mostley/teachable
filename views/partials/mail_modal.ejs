@@ -1,7 +1,9 @@
 
 <div class="modal fade" id="<%-mail_modal_id%>" tabindex="-1" role="dialog" aria-labelledby="<%-mail_modal_id%>_label" aria-hidden="true">
     <div class="modal-dialog modal-lg" style="width: 900px;">
-        <form class="form-horizontal" action="/sendmail" method="POST">
+        <form class="form-horizontal" action="/courses/sendmail" method="POST">
+            <input type="hidden" id="<%-mail_modal_id%>_course_id" name="courseId">
+
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>

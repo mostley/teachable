@@ -1,6 +1,5 @@
-// config/passport.js
+'use strict';
 
-// load all the things we need
 var LocalStrategy   = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 var TwitterStrategy  = require('passport-twitter').Strategy;
@@ -46,7 +45,7 @@ module.exports = function(passport) {
         passReqToCallback : true // allows us to pass back the entire request to the callback
     },
     function(req, email, password, done) {
-        
+
         process.nextTick(function() {
             // find a user whose email is the same as the forms email
             // we are checking to see if the user trying to login already exists
@@ -66,8 +65,9 @@ module.exports = function(passport) {
                     user.local.email    = email;
                     user.local.password = user.generateHash(password);
                     user.save(function(err) {
-                        if (err)
+                        if (err) {
                             throw err;
+                        }
                         return done(null, user);
                     });
 
@@ -78,7 +78,7 @@ module.exports = function(passport) {
                     var newUser            = new User();
 
                     // set the user's local credentials
-                    console.log("creating new user", req.body);
+                    console.log('creating new user', req.body);
                     newUser.local.email    = email;
                     newUser.local.name     = req.body.name || email;
                     newUser.local.password = newUser.generateHash(password); // use the generateHash function in our user model
@@ -122,7 +122,7 @@ module.exports = function(passport) {
             }
 
             if (!user.local.password) {
-                return done("error: no password in database for this user");
+                return done('error: no password in database for this user');
             }
 
             // if the user is found but the password is wrong
@@ -152,7 +152,7 @@ module.exports = function(passport) {
         // make the code asynchronous
         // User.findOne won't fire until we have all our data back from Google
         process.nextTick(function() {
-            
+
             if (!req.user) {
                 // try to find the user based on their google id
                 User.findOne({ 'google.id' : profile.id }, function(err, user) {
@@ -167,8 +167,9 @@ module.exports = function(passport) {
                             user.google.email = profile.emails[0].value;
 
                             user.save(function(err) {
-                                if (err)
+                                if (err) {
                                     throw err;
+                                }
                                 return done(null, user);
                             });
                         }
@@ -186,8 +187,9 @@ module.exports = function(passport) {
 
                         // save the user
                         newUser.save(function(err) {
-                            if (err)
+                            if (err) {
                                 throw err;
+                            }
                             return done(null, newUser);
                         });
                     }
@@ -204,8 +206,9 @@ module.exports = function(passport) {
 
                 // save the user
                 user.save(function(err) {
-                    if (err)
+                    if (err) {
                         throw err;
+                    }
                     return done(null, user);
                 });
             }
@@ -233,8 +236,9 @@ module.exports = function(passport) {
             if (!req.user) {
 
                 User.findOne({ 'facebook.id' : profile.id }, function(err, user) {
-                    if (err)
+                    if (err) {
                         return done(err);
+                    }
 
                     if (user) {
 
@@ -245,8 +249,9 @@ module.exports = function(passport) {
                             user.facebook.email = profile.emails[0].value;
 
                             user.save(function(err) {
-                                if (err)
+                                if (err) {
                                     throw err;
+                                }
                                 return done(null, user);
                             });
                         }
@@ -262,8 +267,9 @@ module.exports = function(passport) {
                         newUser.facebook.email = profile.emails[0].value;
 
                         newUser.save(function(err) {
-                            if (err)
+                            if (err) {
                                 throw err;
+                            }
                             return done(null, newUser);
                         });
                     }
@@ -279,8 +285,9 @@ module.exports = function(passport) {
                 user.facebook.email = profile.emails[0].value;
 
                 user.save(function(err) {
-                    if (err)
+                    if (err) {
                         throw err;
+                    }
                     return done(null, user);
                 });
 

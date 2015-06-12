@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var bcrypt   = require('bcrypt-nodejs');
+'use strict';
 
-// define the schema for our course model
+var mongoose = require('mongoose');
+
 var courseSchema = mongoose.Schema({
 
     name             : String,
@@ -16,6 +16,5 @@ var courseSchema = mongoose.Schema({
 
 // methods ======================
 
-// create the model for course and expose it to our app
 module.exports = mongoose.model('Course', courseSchema);
 

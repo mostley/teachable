@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
     'url' : 'mongodb://mongo/teachable'
     //'url' : 'mongodb://localhost/teachable'

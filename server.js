@@ -1,3 +1,4 @@
+'use strict';
 
 // set up ======================================================================
 var express        = require('express');
@@ -16,7 +17,6 @@ var MongoStore     = require('connect-mongo')(session);
 
 var configDB       = require('./config/database.js');
 
-var fileRotator    = require('file-stream-rotator');
 var fs             = require('fs');
 var logger         = require('./app/log');
 
@@ -28,12 +28,6 @@ if (!fs.existsSync(logDirectory)) {
     fs.mkdirSync(logDirectory);
 }
 
-var accessLogStream = fileRotator.getStream({
-    filename: logDirectory + '/access-%DATE%.log',
-    frequency: 'daily',
-    verbose: false
-});
-
 logger.info(' ===== Starting ===== ');
 
 // configuration ===============================================================
@@ -43,7 +37,7 @@ mongoose.connect(configDB.url);
 require('./config/passport')(passport);
 
 //app.use(express.compress());
-app.use(morgan('dev', { stream: accessLogStream }));
+app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -53,7 +47,7 @@ app.use(expressLayouts);
 app.set('view engine', 'ejs');
 app.set('layout', 'layouts/main');
 
-app.use(session({ 
+app.use(session({
     secret: 'xlovescotchscotchyscotchscotch',
     resave: true,
     saveUninitialized: true,
