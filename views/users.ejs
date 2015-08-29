@@ -8,18 +8,18 @@
 
 <%- contentFor('title') %>
 
-<h1><span class="fa fa-users"></span> Users</h1>
+<h1><span class="fa fa-users"></span> <%=_('Users')%></h1>
 
 <%- contentFor('body') %>
 
 <div class="panel panel-default">
     <div class="panel-heading clearfix">
         <div class="panel-title pull-left" style="padding-top: 0.4em;">
-            Users
+            <%=_('Users')%>
         </div>
         <div class="btn-group pull-right">
-            <button type="button" class="btn btn-primary btn-sm navbar-right" data-toggle="modal" data-target="#create_user_modal" title="Create a new User">
-                <span class="fa fa-plus"> Add User</span>
+            <button type="button" class="btn btn-primary btn-sm navbar-right" data-toggle="modal" data-target="#create_user_modal" title="<%=_('Create a new User')%>">
+                <span class="fa fa-plus"> <%=_('Add User')%></span>
             </button>
         </div>
     </div>
@@ -28,11 +28,11 @@
         <thead>
             <tr>
                 <th>#</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Courses</th>
-                <th>Admin?</th>
-                <th>Function</th>
+                <th><%=_('Name')%></th>
+                <th><%=_('Email')%></th>
+                <th><%=_('Courses')%></th>
+                <th><%=_('Admin?')%></th>
+                <th><%=_('Function')%></th>
             </tr>
         </thead>
 
@@ -46,11 +46,11 @@
             <td>
                 <div class="btn-group" role="toolbar" aria-label="user controls">
                     <div class="btn-group" role="group">
-                        <button role="button" class="btn btn-default btn-edit-user" data-user-id="<%-users[i]._id%>" title="Edit User"><span class="fa fa-pencil"></span></a>
-                        <button type="submit" role="button" class="btn btn-default btn-delete-user" data-user-id="<%-users[i]._id%>" title="Delete User"><span class="fa fa-trash-o"></span></a>
+                        <button role="button" class="btn btn-default btn-edit-user" data-user-id="<%-users[i]._id%>" title="<%=_('Edit User')%>"><span class="fa fa-pencil"></span></a>
+                        <button type="submit" role="button" class="btn btn-default btn-delete-user" data-user-id="<%-users[i]._id%>" title="<%=_('Delete User')%>"><span class="fa fa-trash-o"></span></a>
                     </div>
                     <div class="btn-group" role="group">
-                        <button role="button" class="btn btn-default btn-mail-course" data-course-id="<%-users[i]._id%>" title="Send Mail to User"><span class="fa fa-envelope-o"></span></a>
+                        <button role="button" class="btn btn-default btn-mail-course" data-course-id="<%-users[i]._id%>" title="<%=_('Send Mail to User')%>"><span class="fa fa-envelope-o"></span></a>
                     </div>
                 </div>
             </td>
@@ -59,14 +59,14 @@
     </table>
 </div>
 
-<% modal_user_dialog_title = 'Create User' %>
-<% modal_user_dialog_submit_label = 'Create' %>
+<% modal_user_dialog_title = _('Create User') %>
+<% modal_user_dialog_submit_label = _('Create') %>
 <% modal_user_dialog_show_notify = true %>
 <% modal_user_dialog_id = 'create_user_modal' %>
 <% include partials/modal_user_dialog %>
 
-<% modal_user_dialog_title = 'Edit User' %>
-<% modal_user_dialog_submit_label = 'Save Changes' %>
+<% modal_user_dialog_title = _('Edit User') %>
+<% modal_user_dialog_submit_label = _('Save Changes') %>
 <% modal_user_dialog_show_notify = false %>
 <% modal_user_dialog_id = 'edit_user_modal' %>
 <% include partials/modal_user_dialog %>
@@ -105,15 +105,15 @@
     $('.btn-delete-user').click(function() {
         var row = $(this).parents('tr').children();
         var name = row[1].innerHTML;
-        var res = confirm("Are you sure you want to delete user '" + name + "'?");
+        var res = confirm("<%=_('Are you sure you want to delete user \'NAME_KEY\'?')%>".replace('NAME_KEY', name));
         if (res) {
             $.ajax('/users/' + $(this).data('user-id'), {
                 method: 'delete',
                 success: function() {
-                    window.location = "/users"; 
+                    window.location = "/users";
                 },
                 error: function() {
-                    alert("failed to delete user");
+                    alert("<%=_('Failed to delete user')%>");
                 }
             });
         }
@@ -149,15 +149,15 @@
                 window.location = "/users";
             },
             error: function() {
-                alert("failed to update user");
+                alert("<%=_('Failed to update user')%>");
             }
         });
 
     });
-    
+
     $(function() {
         $(".input-switch").bootstrapSwitch();
-        
+
         $('#mail_modal_text').wysihtml5();
     });
 </script>

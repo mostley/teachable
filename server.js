@@ -19,6 +19,7 @@ var configDB       = require('./config/database.js');
 
 var fs             = require('fs');
 var logger         = require('./app/log');
+var i18n           = require('i18n');
 
 // Logging Init  ===============================================================
 
@@ -44,11 +45,21 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/assets'));
 app.use(expressLayouts);
 
+i18n.configure({
+  locales: ['en', 'de'],
+  defaultLocale: 'de',
+  directory: __dirname + '/app/locales',
+  cookie: 'teachable.locale'
+});
+app.locals._ = i18n.__;
+app.locals.getLocale = i18n.getLocale;
+app.use(i18n.init);
+
 app.set('view engine', 'ejs');
 app.set('layout', 'layouts/main');
 
 app.use(session({
-    secret: 'xlovescotchscotchyscotchscotch',
+    secret: 'teachingisteachable',
     resave: true,
     saveUninitialized: true,
     store: new MongoStore({

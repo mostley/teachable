@@ -24,31 +24,48 @@ function isAdminLoggedIn(req, res, next) {
     res.redirect('/');
 }
 
-module.exports = function(app, passport) {
+// =====================================
+// HOME PAGE ===========================
+// =====================================
+function homePage(app) {
 
-    // normal routes ===============================================================
-
-    // =====================================
-    // HOME PAGE ===========================
-    // =====================================
     app.get('/', function(req, res) {
-        res.render('index');
+        res.render('index', {
+            user : req.user
+        });
     });
 
-    // =====================================
-    // PROFILE SECTION =====================
-    // =====================================
-    // we will want this protected so you have to be logged in to visit
+    app.post('/language', function(req, res) {
+        var lang = req.body.lang;
+        req.setLocale(lang);
+        res.cookie('teachable.locale', lang, { maxAge: 900000, httpOnly: true });
+        res.status(200).end();
+    });
+}
+
+// =====================================
+// PROFILE SECTION =====================
+// =====================================
+// we will want this protected so you have to be logged in to visit
+function profileSection(app) {
+    app.get('/profile', isLoggedIn, function(req, res) {
+        res.render('profile', {
+            user : req.user
+        });
+    });
+}
+
+// =====================================
+// USERS SECTION =======================
+// =====================================
+// we will want this protected so you have to be logged in to visit
+function usersSection(app) {
     app.get('/profile', isLoggedIn, function(req, res) {
         res.render('profile', {
             user : req.user
         });
     });
 
-    // =====================================
-    // USERS SECTION =====================
-    // =====================================
-    // we will want this protected so you have to be logged in to visit
     app.get('/users', isLoggedIn, function(req, res) {
         User.find(function(err, users) {
             res.render('users', {
@@ -81,8 +98,8 @@ module.exports = function(app, passport) {
                 '',
                 'Neues Konto auf Teachable',
                 'Ihr neuer Nutzer ist: "' + newUser.local.name +
-                '" und Ihr PassworT: "' + password +
-                '". Damit können Sie sich direkt auf <a href="shdev.de:3333">Teachable</a> anmelden.',
+                '" und Ihr Passwort: "' + password +
+                '". Damit können Sie sich direkt auf <a href="http://teachable.shdev.de/login">Teachable</a> anmelden.',
                 function() {
                 res.redirect('/users');
             });
@@ -123,11 +140,14 @@ module.exports = function(app, passport) {
         });
 
     });
+}
 
-    // =====================================
-    // COURSE SECTION =====================
-    // =====================================
-    // we will want this protected so you have to be logged in to visit
+// =====================================
+// COURSE SECTION =====================
+// =====================================
+// we will want this protected so you have to be logged in to visit
+function courseSection(app) {
+
     app.get('/courses', isLoggedIn, function(req, res) {
         Course.find(function(err, courses) {
             if (err) {
@@ -325,150 +345,161 @@ module.exports = function(app, passport) {
             });
         });
     });
+}
 
-    // =====================================
-    // LOGOUT ==============================
-    // =====================================
+// =====================================
+// LOGOUT ==============================
+// =====================================
+function logout(app) {
+
     app.get('/logout', function(req, res) {
         req.logout();
         res.redirect('/');
     });
 
+}
+
+// =====================================
+// LOGIN ===============================
+// =====================================
+// show the login form
+
+// locally --------------------------------
+function localLogin(app, passport) {
+
+    app.get('/login', function(req, res) {
+        var msg = req.flash('loginMessage');
+        res.render('login', { message: msg, hasMessage: msg.length > 0 });
+    });
 
 
-// =============================================================================
-// AUTHENTICATE (FIRST LOGIN) ==================================================
-// =============================================================================
-
-    // locally --------------------------------
-
-        // LOGIN ===============================
-        // show the login form
-        app.get('/login', function(req, res) {
-            var msg = req.flash('loginMessage');
-            res.render('login', { message: msg, hasMessage: msg.length > 0 });
-        });
+    // process the login form
+    app.post('/login', passport.authenticate('local-login', {
+        successRedirect : '/courses', // redirect to the secure profile section
+        failureRedirect : '/login', // redirect back to the signup page if there is an error
+        failureFlash : true // allow flash messages
+    }));
 
 
-        // process the login form
-        app.post('/login', passport.authenticate('local-login', {
-            successRedirect : '/courses', // redirect to the secure profile section
-            failureRedirect : '/login', // redirect back to the signup page if there is an error
-            failureFlash : true // allow flash messages
-        }));
+    // SIGNUP ==============================
+    // show the signup form
+    app.get('/signup', function(req, res) {
+        var msg = req.flash('signupMessage');
+        res.render('signup', { message: msg, hasMessage: msg.length > 0 });
+    });
+
+    // process the signup form
+    app.post('/signup', passport.authenticate('local-signup', {
+        successRedirect : '/courses',
+        failureRedirect : '/signup',
+        failureFlash : true
+    }));
 
 
-        // SIGNUP ==============================
-        // show the signup form
-        app.get('/signup', function(req, res) {
-            var msg = req.flash('signupMessage');
-            res.render('signup', { message: msg, hasMessage: msg.length > 0 });
-        });
+}
 
-        // process the signup form
-        app.post('/signup', passport.authenticate('local-signup', {
+function facebookLogin(app, passport) {
+
+    // send to facebook to do the authentication
+    app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
+
+    // handle the callback after facebook has authenticated the user
+    app.get('/auth/facebook/callback',
+        passport.authenticate('facebook', {
             successRedirect : '/courses',
-            failureRedirect : '/signup',
-            failureFlash : true
+            failureRedirect : '/'
         }));
 
+}
 
-    // facebook -------------------------------
+function twitterLogin(app, passport) {
 
-        // send to facebook to do the authentication
-        app.get('/auth/facebook', passport.authenticate('facebook', { scope : 'email' }));
+    // send to twitter to do the authentication
+    app.get('/auth/twitter', passport.authenticate('twitter', { scope : 'email' }));
 
-        // handle the callback after facebook has authenticated the user
-        app.get('/auth/facebook/callback',
-            passport.authenticate('facebook', {
+    // handle the callback after twitter has authenticated the user
+    app.get('/auth/twitter/callback',
+        passport.authenticate('twitter', {
+            successRedirect : '/courses',
+            failureRedirect : '/'
+        }));
+}
+
+function googleLogin(app, passport) {
+
+    app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
+
+    // the callback after google has authenticated the user
+    app.get('/auth/google/callback',
+        passport.authenticate('google', {
                 successRedirect : '/courses',
                 failureRedirect : '/'
-            }));
+        }));
 
-    // twitter --------------------------------
-
-        // send to twitter to do the authentication
-        app.get('/auth/twitter', passport.authenticate('twitter', { scope : 'email' }));
-
-        // handle the callback after twitter has authenticated the user
-        app.get('/auth/twitter/callback',
-            passport.authenticate('twitter', {
-                successRedirect : '/courses',
-                failureRedirect : '/'
-            }));
-
-
-    // google ---------------------------------
-
-        app.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
-
-        // the callback after google has authenticated the user
-        app.get('/auth/google/callback',
-            passport.authenticate('google', {
-                    successRedirect : '/courses',
-                    failureRedirect : '/'
-            }));
+}
 
 // =============================================================================
 // AUTHORIZE (ALREADY LOGGED IN / CONNECTING OTHER SOCIAL ACCOUNT) =============
 // =============================================================================
 
-    // locally --------------------------------
+function authorization(app, passport) {
 
-        app.get('/connect/local', function(req, res) {
-            res.render('connect-local.ejs', { message: req.flash('loginMessage') });
-        });
-        app.post('/connect/local', passport.authenticate('local-signup', {
-            successRedirect : '/courses', // redirect to the secure profile section
-            failureRedirect : '/connect/local', // redirect back to the signup page if there is an error
-            failureFlash : true // allow flash messages
-        }));
+    // locally -------------------------------
+
+    app.get('/connect/local', function(req, res) {
+        res.render('connect-local.ejs', { message: req.flash('loginMessage') });
+    });
+    app.post('/connect/local', passport.authenticate('local-signup', {
+        successRedirect : '/courses', // redirect to the secure profile section
+        failureRedirect : '/connect/local', // redirect back to the signup page if there is an error
+        failureFlash : true // allow flash messages
+    }));
+
 
     // facebook -------------------------------
 
-        // send to facebook to do the authentication
-        app.get('/connect/facebook', passport.authorize('facebook', { scope : 'email' }));
+    // send to facebook to do the authentication
+    app.get('/connect/facebook', passport.authorize('facebook', { scope : 'email' }));
 
-        // handle the callback after facebook has authorized the user
-        app.get('/connect/facebook/callback',
-            passport.authorize('facebook', {
-                successRedirect : '/courses',
-                failureRedirect : '/'
-            }));
+    // handle the callback after facebook has authorized the user
+    app.get('/connect/facebook/callback',
+        passport.authorize('facebook', {
+            successRedirect : '/courses',
+            failureRedirect : '/'
+        }));
 
-    // twitter --------------------------------
+    // twitter -------------------------------
 
-        // send to twitter to do the authentication
-        app.get('/connect/twitter', passport.authorize('twitter', { scope : 'email' }));
+    // send to twitter to do the authentication
+    app.get('/connect/twitter', passport.authorize('twitter', { scope : 'email' }));
 
-        // handle the callback after twitter has authorized the user
-        app.get('/connect/twitter/callback',
-            passport.authorize('twitter', {
-                successRedirect : '/courses',
-                failureRedirect : '/'
-            }));
+    // handle the callback after twitter has authorized the user
+    app.get('/connect/twitter/callback',
+        passport.authorize('twitter', {
+            successRedirect : '/courses',
+            failureRedirect : '/'
+        }));
 
+    // google -------------------------------
 
-    // google ---------------------------------
+    // send to google to do the authentication
+    app.get('/connect/google', passport.authorize('google', { scope : ['profile', 'email'] }));
 
-        // send to google to do the authentication
-        app.get('/connect/google', passport.authorize('google', { scope : ['profile', 'email'] }));
-
-        // the callback after google has authorized the user
-        app.get('/connect/google/callback',
-            passport.authorize('google', {
-                successRedirect : '/courses',
-                failureRedirect : '/'
-            }));
+    // the callback after google has authorized the user
+    app.get('/connect/google/callback',
+        passport.authorize('google', {
+            successRedirect : '/courses',
+            failureRedirect : '/'
+        }));
+}
 
 // =============================================================================
 // UNLINK ACCOUNTS =============================================================
 // =============================================================================
-// used to unlink accounts. for social accounts, just remove the token
-// for local account, remove email and password
-// user account will stay active in case they want to reconnect in the future
 
-    // local -----------------------------------
+function accountUnlink(app) {
+
+    // locally -------------------------------
     app.get('/unlink/local', function(req, res) {
         var user            = req.user;
         user.local.email    = undefined;
@@ -504,4 +535,53 @@ module.exports = function(app, passport) {
            res.redirect('/profile');
         });
     });
+}
+
+module.exports = function(app, passport) {
+
+// =============================================================================
+// CONTENT ROUTES ==============================================================
+// =============================================================================
+
+    homePage(app);
+
+    profileSection(app);
+
+    usersSection(app);
+
+    courseSection(app);
+
+    logout(app);
+
+
+// =============================================================================
+// AUTHENTICATE (FIRST LOGIN) ==================================================
+// =============================================================================
+// show the login form
+
+    localLogin(app, passport);
+
+    facebookLogin(app, passport);
+
+    twitterLogin(app, passport);
+
+    googleLogin(app, passport);
+
+
+// =============================================================================
+// AUTHORIZE (ALREADY LOGGED IN / CONNECTING OTHER SOCIAL ACCOUNT) =============
+// =============================================================================
+
+    authorization(app, passport);
+
+
+// =============================================================================
+// UNLINK ACCOUNTS =============================================================
+// =============================================================================
+// used to unlink accounts. for social accounts, just remove the token
+// for local account, remove email and password
+// user account will stay active in case they want to reconnect in the future
+
+    accountUnlink(app);
+
 };

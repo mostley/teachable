@@ -23,3 +23,5 @@ gulp.task('sass', function () {
   //  .pipe(sourcemaps.write())
     .pipe(gulp.dest('./public/css'));
 });
+
+gulp.task('default', ['watch']);

@@ -1,32 +1,50 @@
 <nav class="navbar navbar-default navbar-fixed-top">
 <div class="navbar-header">
     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
+        <span class="sr-only"><%=_('Toggle navigation')%></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
     </button>
 
     <a class="navbar-brand" href="#">Teachable</a>
-</div> 
+</div>
 
 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
-        <li id="main_menu_home"><a href="/">Home</a></li>
+        <li id="main_menu_home"><a href="/"><%=_('Home')%></a></li>
         <% if (typeof user !== 'undefined') { %>
-            <li id="main_menu_courses"><a href="/courses"><span class="fa fa-archive"></span> Courses</a></li>
+            <li id="main_menu_courses"><a href="/courses"><span class="fa fa-archive"></span> <%=_('Courses')%></a></li>
             <% if (user.admin) { %>
-                <li id="main_menu_users"><a href="/users"><span class="fa fa-users"></span> Users</a></li>
+                <li id="main_menu_users"><a href="/users"><span class="fa fa-users"></span> <%=_('Users')%></a></li>
             <% } %>
-            <li id="main_menu_profile"><a href="/profile"><span class="fa fa-user"></span> My Profile</a></li>
+            <li id="main_menu_profile"><a href="/profile"><span class="fa fa-user"></span> <%=_('My Profile')%></a></li>
         <% } %>
     </ul>
+
     <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                <% if (getLocale() === 'de') { %>
+                    <img class="icon" src="/img/de.png" alt="<%=_('German')%>"/>
+                    <%=_('German')%>
+                <% } else { %>
+                    <img class="icon" src="/img/us.png" alt="<%=_('US English')%>"/>
+                    <%=_('English')%>
+                <% } %>
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="#" class="locale_selector" data-lang="en"><img class="icon" src="/img/us.png" alt="<%=_('US English')%>"/><%=_('English')%></a></li>
+                <li><a href="#" class="locale_selector" data-lang="de"><img class="icon" src="/img/de.png" alt="<%=_('German')%>"/><%=_('German')%></a></li>
+            </ul>
+        </li>
+
         <% if (typeof user === 'undefined') { %>
-            <li id="main_menu_login"><a href="/login"><span class="fa fa-lock"></span> Login</a></li>
-            <li id="main_menu_signup"><a href="/signup"><span class="fa fa-sign-in"></span> Signup</a></li>
+            <li id="main_menu_login"><a href="/login"><span class="fa fa-lock"></span> <%=_('Login')%></a></li>
+            <li id="main_menu_signup"><a href="/signup"><span class="fa fa-sign-in"></span> <%=_('Signup')%></a></li>
         <% } else { %>
-            <li><a href="/logout"><span class="fa fa-sign-out"></span> Logout</a></li>
+            <li><a href="/logout"><span class="fa fa-sign-out"></span> <%=_('Logout')%></a></li>
         <% } %>
     </ul>
 </div>
