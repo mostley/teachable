@@ -40,5 +40,15 @@
 	"US English": "US English",
 	"English": "English",
 	"German": "German",
-	"Logout": "Logout"
+	"Logout": "Logout",
+	"Welcome to Teachable": "Welcome to Teachable",
+	"Login": "Login",
+	"Signup": "Signup",
+	"Email": "Email",
+	"Password": "Password",
+	"Need an account?": "Need an account?",
+	"Or prefer one of these?": "Or prefer one of these?",
+	"Facebook": "Facebook",
+	"Twitter": "Twitter",
+	"Google+": "Google+"
 }
