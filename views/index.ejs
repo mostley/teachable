@@ -8,6 +8,21 @@
 
 <p><%=_('Welcome to Teachable')%></p>
 
+<div class="tile-container">
+  <div id="columns">
+    <% for (var i=0; i<courses.length; i++) {
+         if (courses[i].state === 'published') { %>
+          <a href="<%- courses[i].infolink %>" class="course-tile">
+            <img src="<%- courses[i].imglink %>"/>
+            <p>
+              <%- courses[i].name %>
+            </p>
+          </a>
+    <%   }
+       } %>
+  </div>
+</div>
+
 
 <%- contentFor('style') %>
 

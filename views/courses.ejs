@@ -49,7 +49,7 @@
                 <% } %>
             </td>
             <td><%- courses[i].teachers.map(function(p){ return userDict[p] ? userDict[p].getName() : ""; }).join(', ') %></td>
-            <td><%- courses[i].dates %></td>
+            <td><%- courses[i].date %></td>
             <td><%- courses[i].participants.map(function(p){ return userDict[p].getName(); }) %></td>
             <td>
                 <div class="btn-toolbar" role="toolbar" aria-label="course controls">
@@ -171,10 +171,14 @@
                 $('#edit_course_modal_teachers').tokenfield('setTokens', teachers);
                 $('#edit_course_modal_description').val(course.description);
                 $('#edit_course_modal_date').val(course.date);
+                $('#edit_course_modal_infolink').val(course.infolink);
+                $('#edit_course_modal_imglink').val(course.imglink);
+                $('#edit_course_modal_state').val(course.state);
 
                 $('#edit_course_modal_participant_table').data('participants', []);
                 var table = $('#edit_course_modal_participant_table');
-                addParticipant(table, participants);
+                var listField = $('#edit_course_modal_participants_list');
+                addParticipant(table, participants, listField);
 
                 $('#edit_course_modal').data('current-id', id);
 
@@ -197,6 +201,10 @@
                 name:  $('#edit_course_modal_name').val(),
                 teachers: $('#edit_course_modal_teachers').val(),
                 date: $('#edit_course_modal_date').val(),
+                doodle: '',
+                state: $('#edit_course_modal_state').val(),
+                infolink: $('#edit_course_modal_infolink').val(),
+                imglink: $('#edit_course_modal_imglink').val(),
                 description: $('#edit_course_modal_description').val(),
                 participants: $('#edit_course_modal_participant_table').data('participants').join(',')
             },
@@ -216,17 +224,18 @@
         e.preventDefault();
 
         var sourceField = $('#' + $(this).data('add-source'));
+        var listField = $('#' + $(this).data('list-target'));
 
         var newParticipants = sourceField.tokenfield('getTokens');
 
         var table = $('#' + $(this).data('add-target'));
-        addParticipant(table, newParticipants);
+        addParticipant(table, newParticipants, listField);
         sourceField.tokenfield('setTokens', []);
     });
 
-    function addParticipant(table, newParticipants) {
+    function addParticipant(table, newParticipants, listField) {
         var tbody = table.children('tbody');
-        var participants = table.data('participants');
+        var participants = table.data('participants') || [];
 
         for (var i=0; i<newParticipants.length; i++) {
             var participant = newParticipants[i];
@@ -245,6 +254,7 @@
         }
 
         table.data('participants', participants);
+        listField.val(participants.join(","));
     }
 
     $('.modal-dialog').on('click', '.btn-remove-participant', function(e) {

@@ -30,8 +30,14 @@ function isAdminLoggedIn(req, res, next) {
 function homePage(app) {
 
     app.get('/', function(req, res) {
-        res.render('index', {
-            user : req.user
+
+        Course.find(function(err, courses) {
+            res.render('index', {
+                user : req.user,
+                courses: courses || [],
+                users: [],
+                error: err
+            });
         });
     });
 
@@ -198,6 +204,7 @@ function courseSection(app) {
             description      : req.body.description,
             doodle           : req.body.doodle,
             infolink         : req.body.infolink,
+            imglink          : req.body.imglink,
             participants     : participants ? participants.split(',') : [],
             teachers         : teachers ? teachers.split(',') : []
         });
@@ -215,11 +222,15 @@ function courseSection(app) {
 
         var course = {
             $set: {
-                name: req.body.name,
-                date: req.body.date,
-                teachers: teachers ? teachers.split(',') : [],
-                participants: participants ? participants.split(',') : [],
-                description: req.body.description
+                name             : req.body.name,
+                state            : req.body.state,
+                date             : req.body.date,
+                description      : req.body.description,
+                doodle           : req.body.doodle,
+                infolink         : req.body.infolink,
+                imglink          : req.body.imglink,
+                teachers         : teachers ? teachers.split(',') : [],
+                participants     : participants ? participants.split(',') : []
             }
         };
 

@@ -17,9 +17,16 @@
 	"Close": "Close",
 	"Start": "Start",
 	"Start Date": "Start Date",
+	"State": "State",
+	"Course State": "Course State",
+	"Draft": "Draft",
+	"Review": "In Review",
+	"Published": "Published",
 	"Enter Teachers": "Enter Teachers",
 	"Info Link": "Info Link",
+	"Image Link": "Image Link",
 	"Enter Info Link": "Enter Info Link",
+	"Enter Image Link": "Enter Image Link",
 	"Description": "Description",
 	"Enter Description": "Enter Description",
 	"Add Participants": "Add Participants",
@@ -50,5 +57,9 @@
 	"Or prefer one of these?": "Or prefer one of these?",
 	"Facebook": "Facebook",
 	"Twitter": "Twitter",
-	"Google+": "Google+"
+	"Google+": "Google+",
+	"I want to Participate!": "I want to Participate!",
+	"Draft": "Draft",
+	"Review": "Review",
+	"Published": "Published"
 }

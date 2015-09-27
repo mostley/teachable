@@ -11,7 +11,8 @@ var courseSchema = mongoose.Schema({
     doodle           : String,
     participants     : [ String ],
     teachers         : [ String ],
-    infolink         : String
+    infolink         : String,
+    imglink          : String
 });
 
 // methods ======================
