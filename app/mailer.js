@@ -10,15 +10,28 @@ var mailOptions = {
 };
 
 module.exports = {
-    send: function(to, cc, subject, text, callback) {
+    send: function(to, cc, bcc, subject, text, callback) {
         logger.info('Sending mail to "' + to + '" with the subject "' + subject + '"');
+
+        to = to || '';
+        cc = cc || '';
+        bcc = bcc || '';
 
         if (to.constructor === Array) {
            to = to.join(', ');
         }
 
+        if (cc.constructor === Array) {
+           cc = cc.join(', ');
+        }
+
+        if (bcc.constructor === Array) {
+           bcc = bcc.join(', ');
+        }
+
         mailOptions.to = to;
-        mailOptions.cc = cc || '';
+        mailOptions.cc = cc;
+        mailOptions.bcc = bcc;
         mailOptions.subject = '[Teachable] ' + subject;
         mailOptions.html = text;
 

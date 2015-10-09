@@ -1,0 +1,1 @@
+mongo localhost/teachable debug-provision.js

@@ -4,3 +4,4 @@ node_modules
 app/bower_components
 tmp/
 logs/
+config/database.local.js

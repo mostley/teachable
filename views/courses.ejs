@@ -50,7 +50,7 @@
             </td>
             <td><%- courses[i].teachers.map(function(p){ return userDict[p] ? userDict[p].getName() : ""; }).join(', ') %></td>
             <td><%- courses[i].date %></td>
-            <td><%- courses[i].participants.map(function(p){ return userDict[p].getName(); }) %></td>
+            <td><%- courses[i].participants.map(function(p){ return userDict[p] ? userDict[p].getName() : ""; }) %></td>
             <td>
                 <div class="btn-toolbar" role="toolbar" aria-label="course controls">
                     <% if (user.admin) { %>

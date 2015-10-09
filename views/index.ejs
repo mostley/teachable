@@ -6,13 +6,27 @@
 
 <%- contentFor('body') %>
 
-<p><%=_('Welcome to Teachable')%></p>
+<!--<p><%=_('Welcome to Teachable')%></p>
+<div id="filters" class="button-group">  <button class="button is-checked" data-filter="*">show all</button>
+  <button class="button" data-filter=".metal">metal</button>
+  <button class="button" data-filter=".transition">transition</button>
+  <button class="button" data-filter=".alkali, .alkaline-earth">alkali and alkaline-earth</button>
+  <button class="button" data-filter=":not(.transition)">not transition</button>
+  <button class="button" data-filter=".metal:not(.transition)">metal but not transition</button>
+  <button class="button" data-filter="numberGreaterThan50">number > 50</button>
+  <button class="button" data-filter="ium">name ends with &ndash;ium</button>
+</div>-->
 
-<div class="tile-container">
-  <div id="columns">
+<% if (courses.length === 0) { %>
+
+  <p><%=_('Welcome to Teachable')%></p>
+
+<% } else { %>
+
+  <div class="grid">
     <% for (var i=0; i<courses.length; i++) {
          if (courses[i].state === 'published') { %>
-          <a href="<%- courses[i].infolink %>" class="course-tile">
+          <a class="grid-item" href="<%- courses[i].infolink %>">
             <img src="<%- courses[i].imglink %>"/>
             <p>
               <%- courses[i].name %>
@@ -21,8 +35,8 @@
     <%   }
        } %>
   </div>
-</div>
 
+<% } %>
 
 <%- contentFor('style') %>
 
@@ -30,3 +44,11 @@
 </style>
 
 <%- contentFor('script') %>
+
+<script src="/js/isotope.pkgd.min.js"></script>
+<script>
+  $('.grid').isotope({
+    itemSelector: '.grid-item',
+    layoutMode: 'fitRows'
+  });
+</script>

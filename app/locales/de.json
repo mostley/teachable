@@ -77,5 +77,6 @@
 	"Connect Facebook": "Facebook verbinden",
 	"Connect Twitter": "Twitter verbinden",
 	"Connect Google": "Google verbinden",
-	"I don't want to Participate anymore!": "Ich möchte nicht mehr mitmachen!"
+	"I don't want to Participate anymore!": "Ich möchte nicht mehr mitmachen!",
+	"Are you sure you want to delete user 'NAME_KEY'?": "Are you sure you want to delete user 'NAME_KEY'?"
 }

@@ -102,6 +102,7 @@ function usersSection(app) {
             Mailer.send(
                 newUser.local.email,
                 '',
+                '',
                 'Neues Konto auf Teachable',
                 'Ihr neuer Nutzer ist: "' + newUser.local.name +
                 '" und Ihr Passwort: "' + password +
@@ -345,7 +346,7 @@ function courseSection(app) {
                     return result;
                 });
 
-                Mailer.send(emails, cc, subject, text, function(err) {
+                Mailer.send([], cc, emails, subject, text, function(err) {
                     if (err) {
                         logger.error(err);
                     }
